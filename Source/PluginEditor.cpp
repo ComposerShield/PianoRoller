@@ -28,6 +28,7 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     tripletCounter = 2;
     previousOrder = {0};
     arpeggioDirection = "Ascending";
+    midiNoteNum = 0;
     
     playPosition = "";
     generateButton.setButtonText("Generate");
@@ -35,6 +36,7 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     //Setup Note Name in the top right corner of window==========================
     noteName = "";
     pianoRoll.noteName = &noteName; //Allow piano roll to edit this value.
+    pianoRoll.midiNoteNum = &midiNoteNum; //Allow piano roll to edit this value.
     noteName.addListener(this);
     
     //Slider look and feels======================================================
@@ -188,16 +190,19 @@ void PianoRoll1AudioProcessorEditor::paint (Graphics& g)
     g.setColour(Colours::black);
     
     
-    if(isChildOfBeatCanvas == false){
+    if(!isChildOfBeatCanvas){
         
         if(pianoKeyPanel){
-            g.setFont((height + width) / 100);
-            //const float noteNameX = pianoKeyWidth*width*0.5; // X Position of displayed note name.
             const float noteNameX = 0.0f;
             const float noteNameY = height*0.82;
             const float noteNameHeight = height * topBorder * 0.25;
+            const float midiNoteNumY = noteNameY + height*0.03;
             
+            g.setFont((height + width) / 100);
             g.drawText(noteName.getValue().toString(), noteNameX, noteNameY, pianoKeyWidth*width, noteNameHeight, Justification::centred);
+            if (midiNoteNum)
+                g.setFont((height + width) / 120);
+                g.drawText((String)midiNoteNum, noteNameX, midiNoteNumY, pianoKeyWidth*width, noteNameHeight, Justification::centred);
             g.drawRoundedRectangle(noteNameX + pianoKeyWidth*width*0.04, noteNameY, pianoKeyWidth*width*0.92, noteNameHeight, 10.0f, 1.0f);
             
         }else{
@@ -211,8 +216,6 @@ void PianoRoll1AudioProcessorEditor::paint (Graphics& g)
             g.drawRoundedRectangle(noteNameX + (0.015*width), noteNameY, width/10 - (0.03*width), noteNameHeight, 10.0f, 1.0f);
         }
     }
-    
-    
 }
 
 //==============================================================================

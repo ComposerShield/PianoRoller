@@ -39,6 +39,7 @@ public:
     void changeBeatCanvasTriplet(const int beat, int val);
     void spacebar();
     Value * noteName;
+    int * midiNoteNum;
     
 private:
     void paint (Graphics&) override;

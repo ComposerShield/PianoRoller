@@ -102,6 +102,7 @@ private:
     int tripletCounter;
     int presetToBeUpdated;
     int beatsToBeUpdated;
+    int midiNoteNum;
     Value noteName;
     float currentBeat;
     float previousVal;

@@ -212,6 +212,7 @@ void PianoRoll::monoWriteNote(const int thisCol, const int pitch, const int beat
         updateNote(thisCol, pitch, beatSwitch);
         String newNoteName = Theory::setClassToPitchName[pitch%12];
         noteName->setValue(newNoteName);
+        *midiNoteNum = pitch;
         
         //========Send to BeatCanvasJava.Java=======
         //public void setPitch(int track, int div, int note, int pitch)
@@ -224,7 +225,6 @@ void PianoRoll::monoWriteNote(const int thisCol, const int pitch, const int beat
             )
     {
         updateNote(thisCol, prevPitch, beatSwitch, false);
-        if (pitch==0) DBG("BOOM 3");
         //========Send to BeatCanvasJava.Java=======
         //public void noteOnOff(int track, int div, int note, int onOff)
         BeatCanvasOSC_MessageOut("/BeatCanvas/noteOnOff",currentTrack, beatDiv, thisCol, 0);
@@ -242,19 +242,15 @@ void PianoRoll::polyWriteNote(const int thisCol, const int pitch,
         }else{ //isDragging
             auto [prevCol, prevVol] = polySelectedNote;
             updateNote(prevCol, prevPitch, beatSwitch, false); //Remove previous note (move it to new pitch)
-            if (pitch==0) DBG("BOOM 4");
             polySelectedNote = {thisCol, pitch};
         }
         updateNote(thisCol, pitch, beatSwitch, true);
-        if (pitch==0) DBG("BOOM 5");
     }else{ //rightClick
         updateNote(thisCol, pitch, beatSwitch, false);
-        if (pitch==0) DBG("BOOM 6");
     }
     String newNoteName = Theory::setClassToPitchName[pitch%12];
     noteName->setValue(newNoteName);
 }
-
 
 void PianoRoll::spacebar(){
     BeatCanvasOSC_MessageOut("/BeatCanvas/spacebar");

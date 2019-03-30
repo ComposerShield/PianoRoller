@@ -182,19 +182,6 @@ public:
         float numOfBeats;
         float rootRow;
         float topNote;
-        
-//        PaintData(Graphics&  _g, float _width, float _height, float _noteHeight, float _noteWidth, float _tripNoteWidth, float _numOfBeats, float _rootRow, float _topNote)
-//        {
-//            g = _g;
-//            width = _width;
-//            height = _height;
-//            noteHeight = _noteHeight;
-//            noteWidth = _noteWidth;
-//            tripNoteWidth = _tripNoteWidth;
-//            numOfBeats = _numOfBeats;
-//            rootRow = _rootRow;
-//            topNote = _topNote;
-//        };
     };
     
 
