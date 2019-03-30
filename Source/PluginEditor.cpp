@@ -131,7 +131,7 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     setSize (monitorWidth*0.85, monitorHeight*0.85);
     noteLabel.setText("foo", dontSendNotification);
     noteLabel.setColour(Label::backgroundColourId, PianoRollerColours::greyOff);
-    
+    random.setSeedRandomly();
 }
 
 PianoRoll1AudioProcessorEditor::~PianoRoll1AudioProcessorEditor()
@@ -512,22 +512,14 @@ void PianoRoll1AudioProcessorEditor::scaleMenuChanged(){
     auto [modeNotes, enharmIndex, intervals] = Theory::modeMap.at(scaleName);
     const String rootName = processor.presets[currentPreset]->rootName;
     
-    //rootDiatonicValues are {diatonicValue, diatonicMod} e.g. {0, 3} would be C#. 2 is considered natural.
-    const std::pair<int, int> rootDiatonicValues = Theory::noteNameToDiatonicValue(rootName);
-    
-    const int rootDiatonicVal = rootDiatonicValues.first;
-    const int rootDiatonicMod = rootDiatonicValues.second;
+    //rootDiatonicValues are {diatonicValue, diatonicMod} e.g. {0, 1} would be C#. 0 is considered natural.
+    const auto& [rootDiatonicVal, rootDiatonicMod] = Theory::noteNameToDiatonicValue(rootName);
+
     int previousDiatonicVal = rootDiatonicMod-7;
     
     auto majorScaleIndex = Theory::circleOfFifths[rootName];
     
     pianoRoll.repaint();
-    DBG("\n\n");
-    DBG("rootName: " + rootName + "\n");
-    DBG("scaleName: " + scaleName + "\n");
-    DBG("majorScaleIndex: " + [majorScaleIndex](){String msi; for(auto val:majorScaleIndex) msi+=val; return msi;}() + "\n");
-    DBG("previousDiatonicVal: " + (String)previousDiatonicVal + "\n");
-    DBG("rootDiatonicMod: " + (String)rootDiatonicMod + "\n");
     
     //POPULATE SCALE DISPLAY STAFF WITH NOTES===============//
     scaleDisplayStaff.notes.clear();
@@ -536,7 +528,7 @@ void PianoRoll1AudioProcessorEditor::scaleMenuChanged(){
         const int accidental = enharmIndex[i];
         const int interval = intervals[i];
         
-        const int diatonicVal = [&](){
+        const int diatonicVal = [&, rootDiatonicVal=rootDiatonicVal](){
             const int initVal = (rootDiatonicVal + interval-1)%12; //Get value derived from interval from root.
             return initVal + ( (initVal > previousDiatonicVal) ? 0 : 7); //Componsate octave, ensure higher than previous note.
         }();
@@ -578,16 +570,16 @@ void PianoRoll1AudioProcessorEditor::buttonClicked(Button*){
     Theory::Mode thisMode = Theory::modeMap.at(presets[currentPreset]->currentMode);
     Array<int> currentScale = thisMode.getMode();
     String generatorType = generatorMenu.getText();
-    int currentOctaveShift = presets[currentPreset]->tracks[currentTrack]->octaveShift;
+    int currentOctaveShift = thisTrack->octaveShift;
     
     if(generatorType == "random"){
-        for(int sixteenth=0;sixteenth<presets[currentPreset]->numOfBeats * 4;sixteenth++){
-            auto& [thisPitch, thisVol, active] = getMonoNote(sixteenth, 0);
+        for(auto& [thisPitch, thisVol, active] : thisTrack->sixteenthNotes){
             
             if (random.nextInt(100) > 60 || active){ //40 percent chance of a note.
                 int pitchClass = processor.scale[random.nextInt(processor.scale.size())];
                 int octave = 12 * (4 + random.nextInt(2) + currentOctaveShift);
                 thisPitch = pitchClass+octave;
+                active = true;
             }
         }
     }else if(generatorType == "arp16th" || generatorType == "arp8th"){
@@ -605,6 +597,7 @@ void PianoRoll1AudioProcessorEditor::buttonClicked(Button*){
             auto& [thisPitch, thisVol, active] = getMonoNote(sixteenth * (4/rhythmDiv) + stepMod, 0);
             
             thisPitch = pitch;
+            active = true;
         }
     }else if(generatorType == "arpTriplet"){
         const int root = presets[currentPreset]->root;
@@ -615,6 +608,7 @@ void PianoRoll1AudioProcessorEditor::buttonClicked(Button*){
             auto& [thisPitch, thisVol, active] = getMonoNote(triplet, 0);
             
             thisPitch = pitch;
+            active = true;
         }
         
         for_indexed(auto& beatSwitch : thisTrack->beatSwitch)
