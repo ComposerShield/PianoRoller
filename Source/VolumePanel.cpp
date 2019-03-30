@@ -35,7 +35,7 @@ void VolumePanel::paint (Graphics& g)
     const float noteWidth = (width / ((float)numOfBeats * 4.0f) );
     const float tripNoteWidth = width / ((float)numOfBeats * 3.0f);
     
-    PaintData paintData(&g, width, height, NAN, noteWidth, tripNoteWidth, numOfBeats, NAN, NAN);
+    PaintData paintData{g, width, height, 0, noteWidth, tripNoteWidth, (float)numOfBeats, 0, 0.0f};
     
     g.fillAll (PianoRollerColours::greyOff); //BACKGROUND COLOR
     
@@ -64,8 +64,8 @@ void VolumePanel::drawVolumes(PaintData p, bool mono){
             Point<float> volSlider{col * thisNoteWidth,
                                    p.height - ( p.height/127.f * (float)thisVol ) };
             
-            p.g->setColour (PianoRollerColours::whiteBlue);
-            p.g->fillRect(volSlider.getX(), volSlider.getY(), thisNoteWidth, p.height);
+            p.g.setColour (PianoRollerColours::whiteBlue);
+            p.g.fillRect(volSlider.getX(), volSlider.getY(), thisNoteWidth, p.height);
             
             drawColumnLine(p, subDiv, col, thisNoteWidth);
         }
@@ -81,21 +81,21 @@ void VolumePanel::mouseDrag(const MouseEvent& event){
 }
 
 void VolumePanel::mouseDown(const MouseEvent &event){
-    const auto [leftClick, rightClick] = getClicks(event);
+    const auto [leftClick, rightClick] = getClicks(event, false);
     
-    const int numOfBeats = (*processorPresets)[currentPreset]->numOfBeats;
+    const int numOfBeats = presets[currentPreset]->numOfBeats;
     const float x = getMouseXYRelative().getX();
     const float y = getMouseXYRelative().getY();
-    int vol = midiLimit( (int)( 127.f - y/(float)getHeight() * 127.f ) ); //Final (int) cast rounds it down.
-    int col = midiLimit( (int)(x/(float)getWidth() * (float) (numOfBeats*4)) ); //Final (int) cast rounds it down.
+    const int vol = rightClick ? 96 
+                  : midiLimit( (int)( 127.f - y/(float)getHeight() * 127.f ) ); //Final (int) cast rounds it down.
+    const int col = midiLimit( (int)(x/(float)getWidth() * (float) (numOfBeats*4)) ); //Final (int) cast rounds it down.
     const int tripCol = (int) (x/(float)getWidth() * (float) (numOfBeats*3)); //Final (int) cast rounds it down.
     const int currentBeat = col / 4;
-    const int beatSwitch = (*processorPresets)[currentPreset]->tracks[currentTrack]->beatSwitch[currentBeat];
+    const int beatSwitch = presets[currentPreset]->tracks[currentTrack]->beatSwitch[currentBeat];
     auto [beatDiv, thisCol] = [&](){
         if(beatSwitch==0) return std::make_pair(4, col);
         else              return std::make_pair(3, tripCol);
     }();
-    if(rightClick) vol = 96;
     
     if(isMono()){
         auto& [thisPitch, thisVol, active] =

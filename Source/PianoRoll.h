@@ -47,7 +47,9 @@ private:
     void monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth);
     void polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth);
     void drawNotes(PaintData p);
-
+    void monoWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event);
+    void polyWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event);
+    
     void mouseEnter(const MouseEvent& event) override;
     void mouseExit(const MouseEvent& event) override;
     void mouseUp(const MouseEvent& event) override;
@@ -62,14 +64,11 @@ private:
     std::pair<int, int> polySelectedNote; //col, pitch
     bool canScroll;
     bool isChildOfBeatCanvas;
-    bool isDoubleClick;
     PianoRollComponent * pianoKeys;
     Staff * auditionStaff;
     int prevPitch;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll)
-    
-    
     
 };
 

@@ -139,8 +139,8 @@ void PianoRollComponent::drawColumnLine(PaintData p, const int subDiv, const int
     const int lineWidth = (subDiv==0) ? 3 : 1;
     const float xPosition = 0.0f + ( (float)col*noteWidth );
     
-    p.g->setColour(Colours::black);
-    p.g->drawLine(xPosition, 0., xPosition, p.height, lineWidth);
+    p.g.setColour(Colours::black);
+    p.g.drawLine(xPosition, 0., xPosition, p.height, lineWidth);
 }
 
 int PianoRollComponent::divToBeatSwitch(int div){
@@ -163,6 +163,7 @@ bool PianoRollComponent::isMono(){
     return presets[currentPreset]->isMono;
 }
 
-std::pair<bool, bool> PianoRollComponent::getClicks(MouseEvent event){
-    return std::make_pair(event.mods.isLeftButtonDown(), event.mods.isRightButtonDown());
+std::pair<bool, bool> PianoRollComponent::getClicks(MouseEvent event, bool isDoubleClick){
+    return std::make_pair(event.mods.isLeftButtonDown(),
+                          event.mods.isRightButtonDown() || isDoubleClick);
 }

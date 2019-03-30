@@ -44,7 +44,7 @@ public:
     static inline int currentPreset = 1,
                       currentTrack  = 1;
     
-    
+    bool isDoubleClick;
     
     struct PaintData;
     
@@ -144,7 +144,7 @@ public:
     PolyNote& getPolyNote(int col, int beatSwitch);
     int divToBeatSwitch(int div);
     int beatSwitchToDiv(int beatSwitch);
-    std::pair<bool, bool> getClicks(MouseEvent event);
+    std::pair<bool, bool> getClicks(MouseEvent event, bool isDoubleClick);
     
     //==================PAINTING FUNCTIONS==================
     void drawColumnLine(PaintData p, const int subDiv, const int col, const float noteWidth);
@@ -173,7 +173,7 @@ public:
     }
     
     struct PaintData{
-        Graphics * g;
+        Graphics& g;
         float width;
         float height;
         float noteHeight;
@@ -183,24 +183,23 @@ public:
         float rootRow;
         float topNote;
         
-        PaintData(Graphics * _g, float _width, float _height, float _noteHeight, float _noteWidth, float _tripNoteWidth, float _numOfBeats, float _rootRow, float _topNote)
-        {
-            g = _g;
-            width = _width;
-            height = _height;
-            noteHeight = _noteHeight;
-            noteWidth = _noteWidth;
-            tripNoteWidth = _tripNoteWidth;
-            numOfBeats = _numOfBeats;
-            rootRow = _rootRow;
-            topNote = _topNote;
-        };
+//        PaintData(Graphics&  _g, float _width, float _height, float _noteHeight, float _noteWidth, float _tripNoteWidth, float _numOfBeats, float _rootRow, float _topNote)
+//        {
+//            g = _g;
+//            width = _width;
+//            height = _height;
+//            noteHeight = _noteHeight;
+//            noteWidth = _noteWidth;
+//            tripNoteWidth = _tripNoteWidth;
+//            numOfBeats = _numOfBeats;
+//            rootRow = _rootRow;
+//            topNote = _topNote;
+//        };
     };
     
 
     
 private:
-    
     
 };
 

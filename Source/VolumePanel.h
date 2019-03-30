@@ -19,9 +19,6 @@ class VolumePanel : public Component,
                     public PianoRollComponent
 {
 public:
-
-    
-    
     VolumePanel(OwnedArray<Preset> * processorPresetLocation);
     ~VolumePanel();
     

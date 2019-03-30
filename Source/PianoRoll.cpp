@@ -47,7 +47,7 @@ void PianoRoll::paint (Graphics& g)
     const float noteHeight = ( height / (float)numOfRows );
     const float tripNoteWidth = width / ((float)numOfBeats * 3.0f);
     
-    PaintData paintData(&g, width, height, noteHeight, noteWidth, tripNoteWidth, numOfBeats, rootRow, topNote);
+    PaintData paintData{g, width, height, noteHeight, noteWidth, tripNoteWidth, (float)numOfBeats, (float)rootRow, (float)topNote};
     
     g.fillAll (PianoRollerColours::beatCanvasJungleGreen); //BACKGROUND COLOR
     
@@ -65,31 +65,31 @@ void PianoRoll::drawRows(PaintData p){
         const int pitch = p.topNote-row;
         
         if (checkIfBlackKey(pitch)){
-            p.g->setColour (PianoRollerColours::greyOff);
-            p.g->fillRect(0.0f,yPosition,p.width, p.noteHeight);
+            p.g.setColour (PianoRollerColours::greyOff);
+            p.g.fillRect(0.0f,yPosition,p.width, p.noteHeight);
         }
         
         if(row == p.rootRow && isChildOfBeatCanvas){
-            p.g->setColour (Colours::white);
-            p.g->setOpacity(0.5);
-            p.g->fillRect(0.0f,yPosition, p.width, p.noteHeight);
-            p.g->setOpacity(1.);
+            p.g.setColour (Colours::white);
+            p.g.setOpacity(0.5);
+            p.g.fillRect(0.0f,yPosition, p.width, p.noteHeight);
+            p.g.setOpacity(1.);
         }
     }
 
 }
 
 void PianoRoll::drawRowLines(PaintData p){
-    p.g->setColour (Colours::black);
+    p.g.setColour (Colours::black);
     for(int i=0;i<=numOfRows;i++){
         const float yPosition = 0. + (i*p.height/(float)numOfRows);
-        p.g->setColour(Colours::black);
-        p.g->drawLine(0., yPosition, p.width, yPosition);
+        p.g.setColour(Colours::black);
+        p.g.drawLine(0., yPosition, p.width, yPosition);
         if(i==numOfRows || i==0){ //Reasons to draw a thicker line.
-            p.g->drawLine(0., yPosition, p.width, yPosition, 4);
+            p.g.drawLine(0., yPosition, p.width, yPosition, 4);
         }
     }
-    p.g->drawLine(p.width, 0.0f, p.width, p.height, 3); //Right side line.
+    p.g.drawLine(p.width, 0.0f, p.width, p.height, 3); //Right side line.
 }
 
 void PianoRoll::drawNotes(PaintData p){
@@ -118,10 +118,10 @@ void PianoRoll::drawNotes(PaintData p){
 void PianoRoll::monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
     auto& [pitch, vol, active] = getMonoNote(col, beatSwitch);
     if(active){ //If note is active.
-        p.g->setColour (PianoRollerColours::whiteBlue);
+        p.g.setColour (PianoRollerColours::whiteBlue);
         float x = ( col * thisNoteWidth );
         float y = ( ((float)topNote-(float)pitch)/(float)numOfRows * p.height );
-        p.g->fillRect(x, y, thisNoteWidth, p.noteHeight);
+        p.g.fillRect(x, y, thisNoteWidth, p.noteHeight);
     }
 }
 
@@ -131,10 +131,10 @@ void PianoRoll::polyNoteFill(PaintData p, const int col, const int beatSwitch, c
     
     for(int polyNote=0; polyNote<pitches.size(); polyNote++){
         int pitch = pitches[polyNote];
-        p.g->setColour (PianoRollerColours::whiteBlue);
+        p.g.setColour (PianoRollerColours::whiteBlue);
         float x = ( col * thisNoteWidth );
         float y = ( ((float)topNote-(float)pitch)/(float)numOfRows * p.height );
-        p.g->fillRect(x, y, thisNoteWidth, p.noteHeight);
+        p.g.fillRect(x, y, thisNoteWidth, p.noteHeight);
     }
 }
 
@@ -176,12 +176,7 @@ void PianoRoll::mouseDoubleClick(const juce::MouseEvent &event){
 }
 
 void PianoRoll::mouseDown(const MouseEvent& event){
-    auto [leftClick, rightClick] = getClicks(event);
-    const bool isDragging = event.mouseWasDraggedSinceMouseDown();
-    if(isDoubleClick){rightClick = true; isDoubleClick=false;}
-    
     auto thisTrack = presets[currentPreset]->tracks[currentTrack];
-    const Point<int> pos = {getMouseXYRelative().getX(), getMouseXYRelative().getY()};
     auto [x, y]= std::make_pair(getMouseXYRelative().getX(), getMouseXYRelative().getY());
     
     const int numOfBeats = presets[currentPreset]->numOfBeats;
@@ -190,62 +185,16 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     const int tripCol = (int) (x/(float)getWidth() * (float) (numOfBeats*3)); //Final (int) cast rounds it down.
     const int currentBeat = col / 4;
     const int beatSwitch = thisTrack->beatSwitch[currentBeat];
-    const int beatDiv = beatSwitchToDiv(beatSwitch);
     const int pitch = topNote - row;
     int thisCol = (beatSwitch==0) ? col : tripCol;
 
     if(pitch<128 && pitch>8){
         //Scroll up and down
-        if(canScroll){
-            if (pitch>topNote){topNote = pitch;}
-            else if(pitch<topNote-numOfRows){topNote = pitch+numOfRows;}
-        }else{
-            //if (pitch>topNote){pitch = topNote;}
-            //else if(pitch<topNote-numOfRows){pitch = topNote-numOfRows;}
-        }
+        if     (pitch>topNote)          {topNote = pitch;           auditionStaff->repaint();}
+        else if(pitch<topNote-numOfRows){topNote = pitch+numOfRows; auditionStaff->repaint();}
         
-        if(isMono()){
-            if(pitch != prevPitch && leftClick){
-                updateNote(thisCol, pitch, beatSwitch);
-                String newNoteName = Theory::setClassToPitchName[pitch%12];
-                noteName->setValue(newNoteName);
-
-                //========Send to BeatCanvasJava.Java=======
-                //public void setPitch(int track, int div, int note, int pitch)
-                BeatCanvasOSC_MessageOut("/BeatCanvas/setPitch",currentTrack, beatDiv, thisCol, pitch);
-                BeatCanvasOSC_MessageOut("/BeatCanvas/noteOnOff",currentTrack, beatDiv, thisCol, 1);
-            }
-            else if(( (pitch == prevPitch) || (pitch == prevPitch+1) || (pitch == prevPitch-1) ||
-                      (pitch == prevPitch+2) || (pitch == prevPitch-2) )
-                    && rightClick)
-            {
-                updateNote(thisCol, prevPitch, beatSwitch, false);
-                if (pitch==0) DBG("BOOM 3");
-                //========Send to BeatCanvasJava.Java=======
-                //public void noteOnOff(int track, int div, int note, int onOff)
-                BeatCanvasOSC_MessageOut("/BeatCanvas/noteOnOff",currentTrack, beatDiv, thisCol, 0);
-            }
-        }else{ //isPoly
-            if(leftClick && !rightClick){
-                if(!isDragging){
-                    polySelectedNote = {thisCol, pitch};
-                    //DBG("polySelectedNote is " + (String)thisCol + " " + (String)pitch);
-                }else{ //isDragging
-                    auto [prevCol, prevVol] = polySelectedNote;
-                    updateNote(prevCol, prevPitch, beatSwitch, false); //Remove previous note (move it to new pitch)
-                    if (pitch==0) DBG("BOOM 4");
-                    polySelectedNote = {thisCol, pitch};
-                    //DBG("polySelectedNote is " + (String)thisCol + " " + (String)pitch);
-                }
-                updateNote(thisCol, pitch, beatSwitch, true);
-                if (pitch==0) DBG("BOOM 5");
-            }else{ //rightClick
-                updateNote(thisCol, pitch, beatSwitch, false);
-                if (pitch==0) DBG("BOOM 6");
-            }
-            String newNoteName = Theory::setClassToPitchName[pitch%12];
-            noteName->setValue(newNoteName);
-        }
+        isMono() ? monoWriteNote(thisCol, pitch, beatSwitch, event)
+                 : polyWriteNote(thisCol, pitch, beatSwitch, event);
         
         prevPitch = pitch;
     }
@@ -253,8 +202,59 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     auditionStaff->notes.push_back(NoteHead(pitch, -1, -1));
     
     repaint();
-    auditionStaff->repaint();
 }
+
+void PianoRoll::monoWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event){
+    const auto [leftClick, rightClick] = getClicks(event, isDoubleClick);
+    const int beatDiv = beatSwitchToDiv(beatSwitch);
+    
+    if(pitch != prevPitch && leftClick){
+        updateNote(thisCol, pitch, beatSwitch);
+        String newNoteName = Theory::setClassToPitchName[pitch%12];
+        noteName->setValue(newNoteName);
+        
+        //========Send to BeatCanvasJava.Java=======
+        //public void setPitch(int track, int div, int note, int pitch)
+        BeatCanvasOSC_MessageOut("/BeatCanvas/setPitch",currentTrack, beatDiv, thisCol, pitch);
+        BeatCanvasOSC_MessageOut("/BeatCanvas/noteOnOff",currentTrack, beatDiv, thisCol, 1);
+    }
+    else if(rightClick &&
+            ( (pitch == prevPitch) || (pitch == prevPitch+1) || (pitch == prevPitch-1) ||
+             (pitch == prevPitch+2) || (pitch == prevPitch-2) )
+            )
+    {
+        updateNote(thisCol, prevPitch, beatSwitch, false);
+        if (pitch==0) DBG("BOOM 3");
+        //========Send to BeatCanvasJava.Java=======
+        //public void noteOnOff(int track, int div, int note, int onOff)
+        BeatCanvasOSC_MessageOut("/BeatCanvas/noteOnOff",currentTrack, beatDiv, thisCol, 0);
+    }
+}
+
+void PianoRoll::polyWriteNote(const int thisCol, const int pitch,
+                              const int beatSwitch, const MouseEvent& event){
+    const auto [leftClick, rightClick] = getClicks(event, isDoubleClick);
+    const bool isDragging = event.mouseWasDraggedSinceMouseDown();
+    
+    if(leftClick && !rightClick){
+        if(!isDragging){
+            polySelectedNote = {thisCol, pitch};
+        }else{ //isDragging
+            auto [prevCol, prevVol] = polySelectedNote;
+            updateNote(prevCol, prevPitch, beatSwitch, false); //Remove previous note (move it to new pitch)
+            if (pitch==0) DBG("BOOM 4");
+            polySelectedNote = {thisCol, pitch};
+        }
+        updateNote(thisCol, pitch, beatSwitch, true);
+        if (pitch==0) DBG("BOOM 5");
+    }else{ //rightClick
+        updateNote(thisCol, pitch, beatSwitch, false);
+        if (pitch==0) DBG("BOOM 6");
+    }
+    String newNoteName = Theory::setClassToPitchName[pitch%12];
+    noteName->setValue(newNoteName);
+}
+
 
 void PianoRoll::spacebar(){
     BeatCanvasOSC_MessageOut("/BeatCanvas/spacebar");
@@ -280,12 +280,6 @@ void PianoRoll::changeBeatCanvasTriplet(const int beat, const int val){
 
 
 
-
-
-
-
-
-
 //=============================================================================================================
 
 PianoKeys::PianoKeys(PianoRoll * pianoRollInput){
@@ -294,14 +288,14 @@ PianoKeys::PianoKeys(PianoRoll * pianoRollInput){
 
 
 void PianoKeys::paint(juce::Graphics &g){
-    const int topNote = pianoRoll->topNote;
+    const float topNote = pianoRoll->topNote;
     const float width = getWidth();
     const float height = getHeight();
     const float noteHeight = ( height / (float)numOfRows );
     
     g.fillAll (PianoRollerColours::beatCanvasJungleGreen); //BACKGROUND COLOR
     
-    PaintData paintData(&g, width, height, noteHeight, 0.0f, 0.0f, 0, 0, topNote);
+    PaintData paintData{g, width, height, noteHeight, 0.0f, 0.0f, 0, 0, topNote};
     drawRows(paintData);
 
     g.drawRoundedRectangle(0.0f, 0.0f, width, height, 0.0f, 4.0f);
@@ -314,21 +308,20 @@ void PianoKeys::drawRows(PaintData p){
         const float yPosition = row * p.noteHeight;
         
         if (checkIfBlackKey(pitch)){
-            p.g->setColour (Colours::darkgrey);
-            p.g->fillRect(0.0f,yPosition,p.width*0.666, p.noteHeight);
-            
-            p.g->setColour (Colours::black);
-            p.g->drawRect(0.0f,yPosition,p.width*0.66, p.noteHeight);
+            p.g.setColour (Colours::darkgrey);
+            p.g.fillRect(0.0f,yPosition,p.width*0.666, p.noteHeight);
+            p.g.setColour (Colours::black);
+            p.g.drawRect(0.0f,yPosition,p.width*0.66, p.noteHeight);
             
         }else{ //is a White Key
-            p.g->setColour (PianoRollerColours::beatCanvasJungleGreen);
-            p.g->fillRect(0.0f,yPosition,p.width, p.noteHeight);
+            p.g.setColour (PianoRollerColours::beatCanvasJungleGreen);
+            p.g.fillRect(0.0f,yPosition,p.width, p.noteHeight);
             
-            p.g->setColour (Colours::black);
+            p.g.setColour (Colours::black);
             if(pitch%12==4 || pitch%12==11){ //Note E or B
-                p.g->drawLine(0.0f, yPosition, p.width, yPosition);
+                p.g.drawLine(0.0f, yPosition, p.width, yPosition);
             }else{
-                p.g->drawLine(p.width*0.66f, yPosition-(p.noteHeight*0.5f), p.width-0.66f, yPosition-(p.noteHeight*0.5f));
+                p.g.drawLine(p.width*0.66f, yPosition-(p.noteHeight*0.5f), p.width-0.66f, yPosition-(p.noteHeight*0.5f));
             }
         }
     }
