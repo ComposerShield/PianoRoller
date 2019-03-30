@@ -41,10 +41,6 @@ public:
     ~PianoRoll1AudioProcessorEditor();
     PianoRoll1AudioProcessor& processor; //Our audio processor
     
-    Slider presetSlider;
-    Slider trackSlider;
-    Slider beatSlider;
-    
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> presetSliderAttach;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> trackSliderAttach;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> beatSliderAttach;
@@ -52,7 +48,6 @@ public:
     const Colour greyOff = Colour(128,128,128);
     const Colour whiteBlue = Colour(195,223,226);
     const Colour beatCanvasJungleGreen = Colour(152,152,115);
-    
     
     //==============================================================================
     void paintOverChildren(Graphics& g) override;
@@ -63,9 +58,9 @@ public:
     void updatePreset(int preset);
     void updateNoteName(const String newNoteName);
     void prepToPlayNote(int note, int div);
-    float dbToVolume(float db);
-    float volumeToDB(float vol);
-    void playNote(int pitch, int volume);
+    float dbToVolume(const float db);
+    float volumeToDB(const float vol);
+    void playNote(const int pitch, const int volume);
     
     bool keyPressed(const juce::KeyPress &key, juce::Component *originatingComponent) override;
     void sliderValueChanged(Slider* slider) override;
@@ -96,6 +91,10 @@ public:
     bool isChildOfBeatCanvas;
     
 private:
+    Slider presetSlider;
+    Slider trackSlider;
+    Slider beatSlider;
+    
     int currentNumOfBeats;
     int internalBeat;
     int beatIndex;
@@ -124,7 +123,7 @@ private:
     void buttonClicked (Button*) override;
     
     void paint (Graphics&) override;
-    void drawTripletSwitches(Graphics * g, int numOfBeats, float height, float width);
+    void drawTripletSwitches(Graphics * g, const int numOfBeats, const float height, const float width);
     
     void addItemsToMenu(ComboBox& comboBox, Array<String> list);
     

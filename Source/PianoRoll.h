@@ -59,13 +59,13 @@ private:
     
     MidiMessage midiMessage;
     void (*setParentMidiDisplay)(int);
-    int polySelectedNote;
+    std::pair<int, int> polySelectedNote; //col, pitch
     bool canScroll;
     bool isChildOfBeatCanvas;
     bool isDoubleClick;
     PianoRollComponent * pianoKeys;
     Staff * auditionStaff;
-    
+    int prevPitch;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll)
     

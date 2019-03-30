@@ -116,20 +116,19 @@ void PianoRoll::drawNotes(PaintData p){
 }
 
 void PianoRoll::monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
-    auto& [pitch, vol, active] = getMonoNote(col, 0);
+    auto& [pitch, vol, active] = getMonoNote(col, beatSwitch);
     if(active){ //If note is active.
         p.g->setColour (PianoRollerColours::whiteBlue);
         float x = ( col * thisNoteWidth );
         float y = ( ((float)topNote-(float)pitch)/(float)numOfRows * p.height );
         p.g->fillRect(x, y, thisNoteWidth, p.noteHeight);
     }
-    DBG("Your pitch is " + (String)pitch + " " +  (active ? "True" : "False"));
 }
 
 void PianoRoll::polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
     //TODO******
     auto& [pitches, vol] = getPolyNote(col, beatSwitch);
-
+    
     for(int polyNote=0; polyNote<pitches.size(); polyNote++){
         int pitch = pitches[polyNote];
         p.g->setColour (PianoRollerColours::whiteBlue);
@@ -177,8 +176,7 @@ void PianoRoll::mouseDoubleClick(const juce::MouseEvent &event){
 }
 
 void PianoRoll::mouseDown(const MouseEvent& event){
-    const bool leftClick = event.mods.isLeftButtonDown();
-    bool rightClick = event.mods.isRightButtonDown();
+    auto [leftClick, rightClick] = getClicks(event);
     const bool isDragging = event.mouseWasDraggedSinceMouseDown();
     if(isDoubleClick){rightClick = true; isDoubleClick=false;}
     
@@ -193,7 +191,7 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     const int currentBeat = col / 4;
     const int beatSwitch = thisTrack->beatSwitch[currentBeat];
     const int beatDiv = beatSwitchToDiv(beatSwitch);
-    int pitch = topNote - row;
+    const int pitch = topNote - row;
     int thisCol = (beatSwitch==0) ? col : tripCol;
 
     if(pitch<128 && pitch>8){
@@ -202,11 +200,9 @@ void PianoRoll::mouseDown(const MouseEvent& event){
             if (pitch>topNote){topNote = pitch;}
             else if(pitch<topNote-numOfRows){topNote = pitch+numOfRows;}
         }else{
-            if (pitch>topNote){pitch = topNote;}
-            else if(pitch<topNote-numOfRows){pitch = topNote-numOfRows;}
+            //if (pitch>topNote){pitch = topNote;}
+            //else if(pitch<topNote-numOfRows){pitch = topNote-numOfRows;}
         }
-        //Setup previous pitch
-        auto& [prevPitch, prevVol, active] = getMonoNote(col, beatSwitch);
         
         if(isMono()){
             if(pitch != prevPitch && leftClick){
@@ -223,8 +219,8 @@ void PianoRoll::mouseDown(const MouseEvent& event){
                       (pitch == prevPitch+2) || (pitch == prevPitch-2) )
                     && rightClick)
             {
-                updateNote(thisCol, 0, beatSwitch, false);
-                
+                updateNote(thisCol, prevPitch, beatSwitch, false);
+                if (pitch==0) DBG("BOOM 3");
                 //========Send to BeatCanvasJava.Java=======
                 //public void noteOnOff(int track, int div, int note, int onOff)
                 BeatCanvasOSC_MessageOut("/BeatCanvas/noteOnOff",currentTrack, beatDiv, thisCol, 0);
@@ -232,18 +228,26 @@ void PianoRoll::mouseDown(const MouseEvent& event){
         }else{ //isPoly
             if(leftClick && !rightClick){
                 if(!isDragging){
-                    polySelectedNote = pitch;
+                    polySelectedNote = {thisCol, pitch};
+                    //DBG("polySelectedNote is " + (String)thisCol + " " + (String)pitch);
                 }else{ //isDragging
-                    updateNote(thisCol, polySelectedNote * -1, beatSwitch); //Remove previous note (move it to new pitch)
-                    polySelectedNote = pitch;
+                    auto [prevCol, prevVol] = polySelectedNote;
+                    updateNote(prevCol, prevPitch, beatSwitch, false); //Remove previous note (move it to new pitch)
+                    if (pitch==0) DBG("BOOM 4");
+                    polySelectedNote = {thisCol, pitch};
+                    //DBG("polySelectedNote is " + (String)thisCol + " " + (String)pitch);
                 }
-                updateNote(thisCol, pitch, beatSwitch);
+                updateNote(thisCol, pitch, beatSwitch, true);
+                if (pitch==0) DBG("BOOM 5");
             }else{ //rightClick
-                updateNote(thisCol, pitch * -1, beatSwitch);
+                updateNote(thisCol, pitch, beatSwitch, false);
+                if (pitch==0) DBG("BOOM 6");
             }
             String newNoteName = Theory::setClassToPitchName[pitch%12];
             noteName->setValue(newNoteName);
         }
+        
+        prevPitch = pitch;
     }
     auditionStaff->notes.clear();
     auditionStaff->notes.push_back(NoteHead(pitch, -1, -1));

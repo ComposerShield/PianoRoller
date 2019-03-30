@@ -40,29 +40,35 @@ PolyNote& PianoRollComponent::getPolyNote(int col, int beatSwitch){
 }
 
 
-void PianoRollComponent::updateNote(int col, int pitch, int beatSwitch){
+void PianoRollComponent::updateNote(const int col, const int pitch, const int beatSwitch){
     updateNote(col, pitch, beatSwitch, true);
+    if (pitch==0) DBG("BOOM 8");
 }
 
-void PianoRollComponent::updateNote(int col, int pitch, int beatSwitch, bool isActive){
+void PianoRollComponent::updateNote(const int col, const int pitch, const int beatSwitch, const bool isActive){
+    //DBG( "1 " + (String)pitch + " " + ((isActive) ? "true" : "false") );
     if (isMono()){
         auto& [thisPitch, thisVol, active] = getMonoNote(col, beatSwitch);
         
         thisPitch = pitch;
         active = isActive;
     }else{ //isPoly
+
         auto& [pitches, vol] = getPolyNote(col, beatSwitch);
-        
-        if (isActive){ //leftClick
+        //DBG(((isActive) ? "true" : "false"));
+        //DBG("3 " + (String)pitch + ((isActive) ? "true" : "false"));
+        if (isActive){
             if(pitches.size()<=12)
                 pitches.addIfNotAlreadyThere(pitch);
-        }else{ //rightClick
-            pitches.removeFirstMatchingValue(pitch * -1);
+        }else{
+            //DBG("4 " + (String)pitch + ((isActive) ? "true" : "false"));
+            pitches.removeAllInstancesOf(pitch);
+            //DBG("Removing All instances of " + (String)pitch);
         }
     }
 }
 
-void PianoRollComponent::updateVolume(int col, int vol, int beatSwitch){
+void PianoRollComponent::updateVolume(const int col, const int vol, const int beatSwitch){
     auto& [thisPitch, thisVol, active] = getMonoNote(col, beatSwitch);
     thisVol = vol;
 }
@@ -81,7 +87,7 @@ void PianoRollComponent::updateNumOfBeats(int beats, const int preset){
 }
 
 void PianoRollComponent::changeRhythmDiv(int track, int beat, int beatSwitch){
-    (*processorPresets)[currentPreset]->tracks[track]->beatSwitch.set(beat, beatSwitch);
+    presets[currentPreset]->tracks[track]->beatSwitch.set(beat, beatSwitch);
 }
 
 void PianoRollComponent::updatePreset(const int preset){
@@ -155,4 +161,8 @@ int PianoRollComponent::beatSwitchToDiv(int beatSwitch){
 
 bool PianoRollComponent::isMono(){
     return presets[currentPreset]->isMono;
+}
+
+std::pair<bool, bool> PianoRollComponent::getClicks(MouseEvent event){
+    return std::make_pair(event.mods.isLeftButtonDown(), event.mods.isRightButtonDown());
 }

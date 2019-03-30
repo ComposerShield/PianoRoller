@@ -52,17 +52,11 @@ public:
     public:
         Array<Note> sixteenthNotes;
         Array<Note> tripletNotes;
-        Array<int> sixteenthVols;
-        Array<int> tripletVols;
         Array<int> beatSwitch;
         Array<bool> sixteenthUserSelected;
         Array<bool> tripletUserSelected;
-        //Array<Array<Note>> polySixteenthNotes;
-        //Array<Array<Note>> polyTripletNotes;
         Array<PolyNote> polySixteenths;
         Array<PolyNote> polyTriplets;
-        Array<int> polySixteenthVols;
-        Array<int> polyTripletVols;
         int octaveShift;
         String selectedScale, selectedGenerator, selectedRoot, selectedArpDirection;
         
@@ -75,20 +69,13 @@ public:
             
             for(int note=0;note<maxBeats*4;note++){
                 sixteenthNotes.add(Note{0,96,false});
-                
-                //Poly
                 polySixteenths.add(PolyNote{{},96});
-                polySixteenthVols.add(96);
-
             }
             for(int note=0;note<maxBeats*3;note++){
                 tripletNotes.add(Note{0,96,false});
-                
-                //Poly
                 polyTriplets.add(PolyNote{{},96});
-                polyTripletVols.add(96);
             }
-            for(int note=0;note<maxBeats;note++){
+            for(int beat=0;beat<maxBeats;beat++){
                 beatSwitch.add(0);
             }
         }
@@ -135,16 +122,12 @@ public:
         currentPreset = 1;
         currentTrack = 1;
         
-        //SETUP PRESETS
-//        for(int preset=0;preset<=numOfPresets;preset++){
-//            presets.add(new Preset);
-//        }
     }
     
-    void updateNote(int col, int pitch, int beatSwitch);
-    void updateNote(int col, int pitch, int beatSwitch, bool isActive);
+    void updateNote(const int col, const int pitch, const int beatSwitch);
+    void updateNote(const int col, const int pitch, const int beatSwitch, const bool isActive);
     void setPitch(int track, int div, int note, int pitch, int preset);
-    void updateVolume(int col, int vol, int beatSwitch);
+    void updateVolume(const int col, const int vol, const int beatSwitch);
     void updateBeatSwitch(int beat, int switchVal);
     void updateNumOfBeats(int beats);
     void updateNumOfBeats(int beats, const int preset);
@@ -161,7 +144,7 @@ public:
     PolyNote& getPolyNote(int col, int beatSwitch);
     int divToBeatSwitch(int div);
     int beatSwitchToDiv(int beatSwitch);
-    
+    std::pair<bool, bool> getClicks(MouseEvent event);
     
     //==================PAINTING FUNCTIONS==================
     void drawColumnLine(PaintData p, const int subDiv, const int col, const float noteWidth);

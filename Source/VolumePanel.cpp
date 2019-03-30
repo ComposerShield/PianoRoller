@@ -81,8 +81,7 @@ void VolumePanel::mouseDrag(const MouseEvent& event){
 }
 
 void VolumePanel::mouseDown(const MouseEvent &event){
-    const bool leftClick = event.mods.isLeftButtonDown();
-    const bool rightClick = event.mods.isRightButtonDown();
+    const auto [leftClick, rightClick] = getClicks(event);
     
     const int numOfBeats = (*processorPresets)[currentPreset]->numOfBeats;
     const float x = getMouseXYRelative().getX();

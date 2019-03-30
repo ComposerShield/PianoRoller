@@ -48,26 +48,14 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     
     
     //Add and make visibles======================================================
-    addAndMakeVisible(&pianoRoll);
-    addAndMakeVisible(&pianoKeys);
-    addAndMakeVisible(&auditionStaff);
-    addAndMakeVisible(&scaleDisplayStaff);
-    addAndMakeVisible(&volumePanel);
-    addAndMakeVisible(&playCursorWindow);
-    addAndMakeVisible(&midiLabel);
-    addAndMakeVisible(&presetSlider);
-    addAndMakeVisible(&trackSlider);
-    addAndMakeVisible(&beatSlider);
-    addAndMakeVisible(&rootMenu);
-    addAndMakeVisible(&scaleMenu);
-    addAndMakeVisible(&generateButton);
-    addAndMakeVisible(&monoPolyMenu);
-    addAndMakeVisible(&generatorMenu);
-    addAndMakeVisible(&arpDirectionMenu);
-    addAndMakeVisible(&arpSlider);
-    arpDirectionMenu.setVisible(false);
+    const Array<Component *> makeVisible{&pianoRoll, &pianoKeys, &auditionStaff, &scaleDisplayStaff,
+                                         &volumePanel, &playCursorWindow, &midiLabel, &presetSlider,
+                                         &trackSlider, &beatSlider, &rootMenu, &scaleMenu, &generateButton,
+                                         &monoPolyMenu, &generatorMenu, &arpDirectionMenu, &arpSlider };
+    for(auto& component : makeVisible) addAndMakeVisible(component);
     
-    //addAndMakeVisible(&noteLabel);
+    arpDirectionMenu.setVisible(false);
+
     
     //Setup Sliders===============================================================
     presetSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState,PRESET_ID,presetSlider);
@@ -103,20 +91,17 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     trackSlider.setValue(processor.currentTrack);
     beatSlider.setValue(processor.presets[currentPreset]->numOfBeats);
 
-    
+    //Fill Menus=================================================================
     for(int i=0;i<17;i++){
         rootMenu.addItem(Theory::rootNames[i], i+1);
     }
+    for_indexed(auto& mode : Theory::modeMap)
+        scaleMenu.addItem(mode.first, (int)i+1);
     
-    std::for_each(Theory::modeMap.begin(), Theory::modeMap.end(), [this](std::pair<String, Theory::Mode> mode){
-        scaleMenu.addItem(mode.first, scaleMenu.getNumItems()+1);
-    });
-    
-    
-    addItemsToMenu(monoPolyMenu, {"mono", "poly"});
-    addItemsToMenu(generatorMenu, {"random","arp16th", "arp16th Broken", "arp8th",
-                                   "arp8th Broken", "arpTriplet", "arpTriplet Broken"});
-    addItemsToMenu(arpDirectionMenu, {"ascend","descend", "expand", "seq1", "seq2", "seq3", "seq4", "seq5"});
+    addItemsToMenu(monoPolyMenu,    {"mono", "poly"});
+    addItemsToMenu(generatorMenu,   {"random","arp16th", "arp16th Broken", "arp8th",
+                                    "arp8th Broken", "arpTriplet", "arpTriplet Broken"});
+    addItemsToMenu(arpDirectionMenu,{"ascend","descend", "expand", "seq1", "seq2", "seq3", "seq4", "seq5"});
     
     //Dropdown look&feel and onChange============================================
     getLookAndFeel().setColour(ComboBox::backgroundColourId, PianoRollerColours::greyOff);
@@ -124,11 +109,11 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     getLookAndFeel().setColour(ComboBox::textColourId, Colours::black);
     getLookAndFeel().setColour(ComboBox::arrowColourId, Colours::black);
     
-    rootMenu.setSelectedItemIndex(0, NotificationType::dontSendNotification);
+    rootMenu.setSelectedItemIndex    (0, NotificationType::dontSendNotification);
+    monoPolyMenu.setSelectedItemIndex(0, NotificationType::dontSendNotification);
     scaleMenu.setText("Major", NotificationType::dontSendNotification);
     generatorMenu.setText("random", NotificationType::dontSendNotification);
     arpDirectionMenu.setText("ascend", NotificationType::dontSendNotification);
-    monoPolyMenu.setSelectedItemIndex(0);
     rootMenu.onChange = [this] { rootMenuChanged(); };
     scaleMenu.onChange = [this] { scaleMenuChanged(); };
     monoPolyMenu.onChange = [this] { monoPolyMenuChanged(); };
@@ -136,20 +121,8 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     arpDirectionMenu.onChange = [this]{ arpDirectionMenuChanged(); };
     
     
-    Rectangle<int> r = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
-    int monitorWidth = r.getWidth();
-    int monitorHeight = r.getHeight();
-    
-    /*  //THIS WILL SAVE ALL VALUES TO VALUE TREE========TODO
-    for (int preset=1;preset<=numOfPresets;preset++){
-        for (int track=1;track<=numOfTracks;track++){
-            for (int sixteenth=0;sixteenth<maxBeats*4;sixteenth++){
-                processor.treeState.state.addChild(ValueTree(), <#int index#>, nullptr);
-            }
-        }
-    }
-     
-    */
+    auto monitor = Desktop::getInstance().getDisplays().getMainDisplay().userArea;
+    auto [monitorWidth, monitorHeight] = std::make_pair(monitor.getWidth(), monitor.getHeight());
     
     presetToBeUpdated = 0;
     beatsToBeUpdated = 0;
@@ -169,9 +142,8 @@ PianoRoll1AudioProcessorEditor::~PianoRoll1AudioProcessorEditor()
 //==============================================================================
 
 void PianoRoll1AudioProcessorEditor::addItemsToMenu(ComboBox &comboBox, Array<String> list){
-    for_indexed(auto& item : list){
+    for_indexed(auto& item : list)
         comboBox.addItem(item, (int)i+1);
-    }
 }
 
 
@@ -186,27 +158,8 @@ void PianoRoll1AudioProcessorEditor::paint (Graphics& g)
     g.fillAll(greyOff);
     
     tripletSwitches.clear();
-    
-    //=========DRAW TRIPLET SWITCHES==============//
-    const float beatWidth = (pianoRoll.getWidth() / ((float)numOfBeats) );
-    const float ellipseWidth = beatWidth*0.333;
-    const float ellipseHeight = height * topBorder * 0.225;
-    const float y = height * topBorder * 0.66;
+    drawTripletSwitches(&g, numOfBeats, height, width);
 
-    for(int beat=0; beat<numOfBeats;beat++){
-        const float x = (beat * beatWidth) + beatWidth*0.333 + pianoKeyWidth*width;
-        
-        if(processor.presets[currentPreset]->tracks[currentTrack]->beatSwitch[beat] == 0){
-            g.setColour(Colour(156,168,152)); //If not a triplet
-        }else{g.setColour(Colours::limegreen);} //If a triplet.
-        g.fillEllipse(x, y, ellipseWidth, ellipseHeight);
-        g.setColour(Colours::black);
-        g.drawEllipse(x, y, ellipseWidth, ellipseHeight, 1.);
-        tripletSwitches.add(Array<float>{x+(ellipseWidth/2), y + (ellipseHeight/2)});
-    }
-    
-
-    
     if(topBorder){
         //PRESET SLIDER "PRESET" LABEL
         const float sliderWidth = presetSlider.getWidth();
@@ -264,7 +217,7 @@ void PianoRoll1AudioProcessorEditor::paint (Graphics& g)
 
 //==============================================================================
 
-void PianoRoll1AudioProcessorEditor::drawTripletSwitches(Graphics * g, int numOfBeats, float height, float width){
+void PianoRoll1AudioProcessorEditor::drawTripletSwitches(Graphics * g, const int numOfBeats, const float height, const float width){
     const float beatWidth = (pianoRoll.getWidth() / ((float)numOfBeats) );
     const float ellipseWidth = beatWidth*0.333;
     const float ellipseHeight = height * topBorder * 0.225;
@@ -274,7 +227,7 @@ void PianoRoll1AudioProcessorEditor::drawTripletSwitches(Graphics * g, int numOf
         const float x = (beat * beatWidth) + beatWidth*0.333 + pianoKeyWidth*width;
         
         
-        if(processor.presets[currentPreset]->tracks[currentTrack]->beatSwitch[beat] == 0){
+        if(presets[currentPreset]->tracks[currentTrack]->beatSwitch[beat] == 0){
             g->setColour(Colour(156,168,152)); //If not a triplet
         }else{g->setColour(Colours::limegreen);} //If a triplet.
         
@@ -360,15 +313,15 @@ void PianoRoll1AudioProcessorEditor::setMidiDisplay(int midi){
     midiLabel.setName((String) midi);
 }
 
-float PianoRoll1AudioProcessorEditor::dbToVolume(float db){
+float PianoRoll1AudioProcessorEditor::dbToVolume(const float db){
     return powf(10.0f, 0.05f * db);
 }
 
-float PianoRoll1AudioProcessorEditor::volumeToDB(float vol){
+float PianoRoll1AudioProcessorEditor::volumeToDB(const float vol){
     return 20.0f * log10f(vol);
 }
 
-void PianoRoll1AudioProcessorEditor::playNote(int pitch, int volume){
+void PianoRoll1AudioProcessorEditor::playNote(const int pitch, const int volume){
     processor.playNote(pitch, volume);
 }
 
