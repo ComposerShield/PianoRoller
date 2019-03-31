@@ -49,21 +49,9 @@ void Staff::paint(juce::Graphics &g){
     Theory::Mode mode = Theory::modeMap.at(modeName);
     auto [modeNotes, enharmIndex, intervals] = mode;
     
-    //=================
-    //====DRAW CLEF====
-    //=================
-    g.setFont(opusLookAndFeel.getOpus());
-    g.setFont(height*0.76);
-    g.drawText(clefText, 0.0f, clefHeight, width, height, Justification::left);
+    drawClef(g, width, height, clefHeight, clefText);
     
-    //=================
-    //====DRAW LINES====
-    //=================
-    g.setColour(Colours::black);
-    for(int line=4; line<9;line++){
-        float yPos = line*lineSpacing;
-        g.drawLine(0.0f, yPos, width, yPos);
-    }
+    drawStaffLines(g, width, lineSpacing);
     
     //=================
     //====DRAW NOTE====
@@ -72,27 +60,14 @@ void Staff::paint(juce::Graphics &g){
         
         const int pitchSetClass = ((int)pitch) % 12;
         const Array<int> fooo = enharmIndex;
+        const float xPos = clefSpacing + (clefSpacing * i * 0.5);
+        const float yPos = height - ( (lineSpacing/2) * (diatonicNoteValue+3) );
+        const float ledgerLineX = xPos - noteWidth/2;
+        const float ledgerLineY = yPos+(lineSpacing/2);
         
-        if (accidental == NO_PREFERENCE){
-            accidental = [this, modeNotes=modeNotes, pitchSetClass, enharmIndex=enharmIndex](){
-                if(modeNotes.contains(pitchSetClass)){
-                    switch (enharmIndex[modeNotes.indexOf(pitchSetClass)]){
-                        case -1: return FLAT;
-                        case 1 : return SHARP;
-                        case 0 : return NATURAL;
-                        case -2: return DOUBLE_FLAT;
-                        case 2 : return DOUBLE_SHARP;
-                    }
-                }
-                
-                if (std::find(std::begin(Theory::blackKeys), std::end(Theory::blackKeys), pitchSetClass) != std::end(Theory::blackKeys)){ //If a black key.
-                    return SHARP;
-                }
-                return NATURAL;
-            }();
-        }
+        checkAccidental(accidental, modeNotes, enharmIndex, pitchSetClass);
         
-        auto [lowestCinStaffLineOffset, lowestCinStaffOctave] = [&](){
+        const auto [lowestCinStaffLineOffset, lowestCinStaffOctave] = [&](){
             switch(clef){
                 case TREBLE: return std::pair<int, int>(3, 4);
                 case BASS: return std::pair<int, int>(1, 2);
@@ -103,13 +78,7 @@ void Staff::paint(juce::Graphics &g){
             }
         }();
         
-        float xPos = clefSpacing + (clefSpacing * i * 0.5);
-        float yPos = height - ( (lineSpacing/2) * (diatonicNoteValue+3) );
-        float ledgerLineX = xPos - noteWidth/2;
-        float ledgerLineY = yPos+(lineSpacing/2);
-        
-        
-        String accidentalText = [&, accidental=accidental](){
+        const String accidentalText = [&, accidental=accidental](){
             switch(accidental){
                 case SHARP: return "#";
                 case FLAT: return "b";
@@ -129,8 +98,41 @@ void Staff::paint(juce::Graphics &g){
         if(diatonicNoteValue==0 || diatonicNoteValue==12) g.drawLine(ledgerLineX, ledgerLineY, ledgerLineX + noteWidth*2, ledgerLineY);
         //TODO: Two ledger lines below or above.
     }
+}
+
+void Staff::drawClef(Graphics &g, const float width, const float height, const float clefHeight, const String clefText){
+    g.setFont(opusLookAndFeel.getOpus());
+    g.setFont(height*0.76);
+    g.drawText(clefText, 0.0f, clefHeight, width, height, Justification::left);
+}
+
+void Staff::drawStaffLines(Graphics &g, const int width, const int lineSpacing){
+    g.setColour(Colours::black);
+    for(int line=4; line<9;line++){
+        float yPos = line*lineSpacing;
+        g.drawLine(0.0f, yPos, width, yPos);
+    }
+}
+
+void Staff::drawNotes(Graphics &g){
     
     
-    
-    
+}
+
+void Staff::checkAccidental(Accidental& accidental, const Array<int> modeNotes, const Array<int> enharmIndex, const int pitchSetClass){
+    if (accidental == NO_PREFERENCE){
+        accidental = [this, modeNotes=modeNotes, pitchSetClass, enharmIndex=enharmIndex](){
+            if(modeNotes.contains(pitchSetClass)){
+                switch (enharmIndex[modeNotes.indexOf(pitchSetClass)]){
+                    case -1: return FLAT;
+                    case 1 : return SHARP;
+                    case 0 : return NATURAL;
+                    case -2: return DOUBLE_FLAT;
+                    case 2 : return DOUBLE_SHARP;
+                }
+            }
+            
+            return checkIfBlackKey(pitchSetClass) ? SHARP : NATURAL;
+        }();
+    }
 }

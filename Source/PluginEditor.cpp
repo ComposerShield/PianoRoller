@@ -528,9 +528,11 @@ void PianoRoll1AudioProcessorEditor::scaleMenuChanged(){
         const int accidental = enharmIndex[i];
         const int interval = intervals[i];
         
+        DBG("Note " + (String)note);
+        
         const int diatonicVal = [&, rootDiatonicVal=rootDiatonicVal](){
             const int initVal = (rootDiatonicVal + interval-1)%12; //Get value derived from interval from root.
-            return initVal + ( (initVal > previousDiatonicVal) ? 0 : 7); //Componsate octave, ensure higher than previous note.
+            return initVal + ( (initVal >= previousDiatonicVal) ? 0 : 7); //Componsate octave, ensure higher than previous note.
         }();
         const int diatonicMod = 2 +
                                 majorScaleIndex[diatonicVal] + 
