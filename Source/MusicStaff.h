@@ -21,15 +21,17 @@ struct NoteHead{
     int diatonicModValue;
     Accidental accidental;
     
-    NoteHead(const uint8 pitch, const int _diatonicNoteValue, const int _diatonicModValue){
+    
+    NoteHead(const uint8 pitch, const int _diatonicNoteValue, const int _diatonicModValue, const bool repeatDiatonicVal){
         notePitch = pitch;
         diatonicNoteValue = _diatonicNoteValue;
         diatonicModValue = _diatonicModValue;
-        accidental = Theory::diatonicMatrixToAccidentals(diatonicModValue);
+        accidental = (repeatDiatonicVal && _diatonicModValue==2) ? COURTESY_NATURAL
+                                                                 : Theory::diatonicMatrixToAccidentals(diatonicModValue);
     }
     
     NoteHead(const uint8 pitch){
-        NoteHead(pitch, -1, -1);
+        NoteHead(pitch, -1, -1, false);
         accidental = NO_PREFERENCE;
     }
 };

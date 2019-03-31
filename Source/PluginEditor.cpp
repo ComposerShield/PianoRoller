@@ -523,12 +523,13 @@ void PianoRoll1AudioProcessorEditor::scaleMenuChanged(){
     
     //POPULATE SCALE DISPLAY STAFF WITH NOTES===============//
     scaleDisplayStaff.notes.clear();
+    int prevDiatonicVal = -1;
     for(int i = 0; i<processor.scale.size(); i++){
         const int note = processor.scale[i]; //Set class value.
         const int accidental = enharmIndex[i];
         const int interval = intervals[i];
         
-        DBG("Note " + (String)note);
+        //DBG("Note " + (String)note);
         
         const int diatonicVal = [&, rootDiatonicVal=rootDiatonicVal](){
             const int initVal = (rootDiatonicVal + interval-1)%12; //Get value derived from interval from root.
@@ -537,12 +538,15 @@ void PianoRoll1AudioProcessorEditor::scaleMenuChanged(){
         const int diatonicMod = 2 +
                                 majorScaleIndex[diatonicVal] + 
                                 accidental;
+        const bool repeatDiatonicNote = (diatonicVal==prevDiatonicVal);
+        prevDiatonicVal = diatonicVal;
         
-        scaleDisplayStaff.notes.push_back(NoteHead(note, diatonicVal, diatonicMod));
+        scaleDisplayStaff.notes.push_back(NoteHead(note, diatonicVal, diatonicMod, repeatDiatonicNote));
         previousDiatonicVal = diatonicVal;
         
-        DBG((String)note + (String)accidental+ (String)interval + "\n");
-        DBG("previousDiatonicVal: " + (String)previousDiatonicVal + "\n");
+        //DEBUGGING
+        //DBG((String)note + (String)accidental+ (String)interval + "\n");
+        //DBG("previousDiatonicVal: " + (String)previousDiatonicVal + "\n");
     }
     
     buttonClicked(&generateButton); //Click the generate button when finished.

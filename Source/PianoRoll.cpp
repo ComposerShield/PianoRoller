@@ -201,7 +201,7 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     }
     
     auditionStaff->notes.clear();
-    auditionStaff->notes.push_back(NoteHead(pitch, diatonicNoteValue, -1));
+    auditionStaff->notes.push_back(NoteHead(pitch, diatonicNoteValue, -1, false));
     
     repaint();
 }

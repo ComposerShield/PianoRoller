@@ -54,8 +54,9 @@ void Staff::paint(juce::Graphics &g){
     drawStaffLines(g, width, lineSpacing);
     
     //=================
-    //====DRAW NOTE====
+    //====DRAW NOTEs===
     //=================
+    int prevDiatonicNoteVal = -1;
     for_indexed(auto& [pitch, noteName, diatonicNoteValue, diatonicModValue, accidental] : notes){
         
         const int pitchSetClass = ((int)pitch) % 12;
@@ -85,6 +86,7 @@ void Staff::paint(juce::Graphics &g){
                 case DOUBLE_SHARP: return "x";
                 case DOUBLE_FLAT: return "bb";
                 case NATURAL: return "";
+                case COURTESY_NATURAL: DBG("dsgdfgsfh\negfergre\nsasd"); return "n";
             }
             return "";
         }();
@@ -120,15 +122,17 @@ void Staff::drawNotes(Graphics &g){
 }
 
 void Staff::checkAccidental(Accidental& accidental, const Array<int> modeNotes, const Array<int> enharmIndex, const int pitchSetClass){
+    
     if (accidental == NO_PREFERENCE){
-        accidental = [this, modeNotes=modeNotes, pitchSetClass, enharmIndex=enharmIndex](){
+        
+        accidental = [&](){
             if(modeNotes.contains(pitchSetClass)){
                 switch (enharmIndex[modeNotes.indexOf(pitchSetClass)]){
                     case -1: return FLAT;
                     case 1 : return SHARP;
-                    case 0 : return NATURAL;
                     case -2: return DOUBLE_FLAT;
                     case 2 : return DOUBLE_SHARP;
+                    case 0 : return NATURAL;
                 }
             }
             

@@ -112,7 +112,6 @@ public:
     
     int root;
     Array<int> scale{0,2,4,5,7,9,11};
-    std::mutex midiStreamMutex;
 
 private:
     //AudioParameterFloat* playCursor;

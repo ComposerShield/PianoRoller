@@ -36,7 +36,8 @@ enum Accidental{
     DOUBLE_SHARP,
     DOUBLE_FLAT,
     NO_PREFERENCE,
-    NATURAL
+    NATURAL,
+    COURTESY_NATURAL
 };
 
 namespace Theory{
