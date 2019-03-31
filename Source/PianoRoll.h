@@ -12,9 +12,9 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PianoRollComponent.h"
-#include "Theory.h"
 #include "PluginProcessor.h"
 #include <map>
+#include "MusicStaff.h"
 
 //==============================================================================
 

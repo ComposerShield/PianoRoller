@@ -142,6 +142,7 @@
     <ClCompile Include="..\..\Source\PlayCursorWindow.cpp"/>
     <ClCompile Include="..\..\Source\VolumePanel.cpp"/>
     <ClCompile Include="..\..\Source\PianoRollComponent.cpp"/>
+    <ClCompile Include="..\..\Source\MusicStaff.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -2003,7 +2004,7 @@
     <ClInclude Include="..\..\Source\PlayCursorWindow.h"/>
     <ClInclude Include="..\..\Source\VolumePanel.h"/>
     <ClInclude Include="..\..\Source\PianoRollComponent.h"/>
-    <ClInclude Include="..\..\Source\OSC_Messages.h"/>
+    <ClInclude Include="..\..\Source\MusicStaff.h"/>
     <ClInclude Include="..\..\Source\Theory.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h"/>

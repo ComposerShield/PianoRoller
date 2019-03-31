@@ -472,6 +472,9 @@
     <ClCompile Include="..\..\Source\PianoRollComponent.cpp">
       <Filter>PianoRoller\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\MusicStaff.cpp">
+      <Filter>PianoRoller\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <Filter>JUCE Modules\juce_audio_basics\buffers</Filter>
     </ClCompile>
@@ -2505,7 +2508,7 @@
     <ClInclude Include="..\..\Source\PianoRollComponent.h">
       <Filter>PianoRoller\Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\OSC_Messages.h">
+    <ClInclude Include="..\..\Source\MusicStaff.h">
       <Filter>PianoRoller\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Theory.h">

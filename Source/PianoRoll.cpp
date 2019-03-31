@@ -186,6 +186,7 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     const int currentBeat = col / 4;
     const int beatSwitch = thisTrack->beatSwitch[currentBeat];
     const int pitch = topNote - row;
+    const int diatonicNoteValue = Theory::setClassToDiatonic[pitch%12];
     int thisCol = (beatSwitch==0) ? col : tripCol;
 
     if(pitch<128 && pitch>8){
@@ -198,8 +199,9 @@ void PianoRoll::mouseDown(const MouseEvent& event){
         
         prevPitch = pitch;
     }
+    
     auditionStaff->notes.clear();
-    auditionStaff->notes.push_back(NoteHead(pitch, -1, -1));
+    auditionStaff->notes.push_back(NoteHead(pitch, diatonicNoteValue, -1));
     
     repaint();
 }

@@ -19,34 +19,26 @@ OwnedArray<PianoRollComponent::Preset> PianoRollComponent::presets = []()->Owned
 }();
 
 Note& PianoRollComponent::getMonoNote(int col, int beatSwitch){
-    if(beatSwitch==0){
-        return presets[currentPreset]->tracks[currentTrack]->sixteenthNotes.getReference(col);
-    }else if (beatSwitch==1){
-        return presets[currentPreset]->tracks[currentTrack]->tripletNotes.getReference(col);
-    }else{
-        DBG("getNote: not a valid beatSwitch"); jassert(true); return getMonoNote(0, 0);
+    switch(beatSwitch){
+        case 0: return presets[currentPreset]->tracks[currentTrack]->sixteenthNotes.getReference(col); break;
+        case 1: return presets[currentPreset]->tracks[currentTrack]->tripletNotes.getReference(col); break;
+        default: jassertfalse; return getMonoNote(0, 0);
     }
 }
 
 PolyNote& PianoRollComponent::getPolyNote(int col, int beatSwitch){
-    if(beatSwitch==0){
-        return {presets[currentPreset]->tracks[currentTrack]->polySixteenths.getReference(col)};
-    }else if (beatSwitch==1){
-        return {presets[currentPreset]->tracks[currentTrack]->polyTriplets.getReference(col)};
-        
-    }else{
-        DBG("getNote: not a valid beatSwitch"); return getPolyNote(0, 0);
+    switch(beatSwitch){
+        case 0: return {presets[currentPreset]->tracks[currentTrack]->polySixteenths.getReference(col)}; break;
+        case 1: return {presets[currentPreset]->tracks[currentTrack]->polyTriplets.getReference(col)}; break;
+        default : jassertfalse; return getPolyNote(0, 0);
     }
 }
 
-
 void PianoRollComponent::updateNote(const int col, const int pitch, const int beatSwitch){
     updateNote(col, pitch, beatSwitch, true);
-    if (pitch==0) DBG("BOOM 8");
 }
 
 void PianoRollComponent::updateNote(const int col, const int pitch, const int beatSwitch, const bool isActive){
-    //DBG( "1 " + (String)pitch + " " + ((isActive) ? "true" : "false") );
     if (isMono()){
         auto& [thisPitch, thisVol, active] = getMonoNote(col, beatSwitch);
         
@@ -55,15 +47,11 @@ void PianoRollComponent::updateNote(const int col, const int pitch, const int be
     }else{ //isPoly
 
         auto& [pitches, vol] = getPolyNote(col, beatSwitch);
-        //DBG(((isActive) ? "true" : "false"));
-        //DBG("3 " + (String)pitch + ((isActive) ? "true" : "false"));
         if (isActive){
             if(pitches.size()<=12)
                 pitches.addIfNotAlreadyThere(pitch);
         }else{
-            //DBG("4 " + (String)pitch + ((isActive) ? "true" : "false"));
             pitches.removeAllInstancesOf(pitch);
-            //DBG("Removing All instances of " + (String)pitch);
         }
     }
 }
@@ -147,7 +135,7 @@ int PianoRollComponent::divToBeatSwitch(int div){
     switch(div){
         case 4: return 0;
         case 3: return 1;
-        default: DBG("divToBeatSwitch: not a valid div.\n"); return -1;
+        default: jassertfalse; return -1;
     }
 }
 
@@ -155,7 +143,7 @@ int PianoRollComponent::beatSwitchToDiv(int beatSwitch){
     switch(beatSwitch){
         case 0: return 4;
         case 1: return 3;
-        default: DBG("beatSwitchToDiv: not a valid div.\n"); return -1;
+        default: jassertfalse; return -1;
     }
 }
 

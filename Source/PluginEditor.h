@@ -19,6 +19,7 @@
 #include "Theory.h"
 #include <algorithm>
 #include <random>
+#include "MusicStaff.h"
 
 
 //==============================================================================
