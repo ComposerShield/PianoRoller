@@ -11,10 +11,9 @@
 #include "PianoRollComponent.h"
 
 OwnedArray<PianoRollComponent::Preset> PianoRollComponent::presets = []()->OwnedArray<PianoRollComponent::Preset>{
-    OwnedArray<PianoRollComponent::Preset> output;
-    for(int preset=0;preset<=PianoRollComponent::numOfPresets;preset++){
-        output.add(new PianoRollComponent::Preset);
-    }
+    OwnedArray<Preset> output;
+    for(int preset=0;preset<=PianoRollComponent::numOfPresets;preset++)
+        output.add(new Preset);
     return output;
 }();
 
@@ -71,7 +70,7 @@ void PianoRollComponent::updateNumOfBeats(int beats){
 
 void PianoRollComponent::updateNumOfBeats(int beats, const int preset){
     beats = limitRange(beats, 1, maxBeats);
-    presets[preset]->numOfBeats = beats;
+    updateNumOfBeats(beats);
 }
 
 void PianoRollComponent::changeRhythmDiv(int track, int beat, int beatSwitch){

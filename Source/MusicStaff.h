@@ -60,7 +60,7 @@ public:
                                                                       BinaryData::OpusStd_otfSize));
     }
 };
-
+//
 //==========================================================================================
 
 class Staff : public Component,
@@ -69,14 +69,12 @@ public PianoRollComponent
 public:
     std::vector<NoteHead> notes;
     
-    Staff(OwnedArray<Preset> * processorPresetLocation, int * currentPresetPointer);
-    
+    Staff();
     
     
 private:
     Clef clef = TREBLE;
     OpusLookAndFeel opusLookAndFeel;
-    int * currentPreset;
     
     void paint(Graphics& g) override;
     void drawClef(Graphics &g, const float width, const float height, const float clefHeight, const String clefText);

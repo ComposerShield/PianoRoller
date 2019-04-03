@@ -112,10 +112,7 @@ public:
 
     ////THE ALMIGHTY PRESET ARRAY////
     static OwnedArray<Preset> presets;
-    ////========================////
-    
-    //OwnedArray<Preset> * processorPresets;
-    OwnedArray<Preset> * processorPresets;
+
     
     ////==============CONSTRUCTOR==============//
     PianoRollComponent(){

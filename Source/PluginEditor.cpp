@@ -13,7 +13,8 @@
 
 //==============================================================================
 PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), midiLabel("0"), pianoRoll(&p.presets, &auditionStaff, &pianoKeys), pianoKeys(&pianoRoll), auditionStaff(&p.presets, &p.currentPreset), scaleDisplayStaff(&p.presets, &p.currentPreset), volumePanel(&p.presets), playCursorWindow(&processor.lastPosInfo)
+: AudioProcessorEditor (&p), processor (p), midiLabel("0"), pianoRoll(auditionStaff, pianoKeys), pianoKeys(pianoRoll, auditionStaff),
+  playCursorWindow(processor.lastPosInfo)
 {
     setVisible(true);
     setResizable(true, true);
@@ -61,9 +62,7 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     
     //Setup Sliders===============================================================
     presetSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState,PRESET_ID,presetSlider);
-    
     trackSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState,TRACK_ID,trackSlider);
-    
     beatSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState,BEATS_ID,beatSlider);
     
     presetSlider.setRange(1,numOfPresets,(int)1);
@@ -85,7 +84,6 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     beatSlider.addMouseListener(this, true);
     generateButton.addListener(this);
     
-    processor.playPosition.addListener(this); //The original way to update playhead,
     setWantsKeyboardFocus(true);
     addKeyListener(this);
     
@@ -94,9 +92,8 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     beatSlider.setValue(processor.presets[currentPreset]->numOfBeats);
 
     //Fill Menus=================================================================
-    for(int i=0;i<17;i++){
-        rootMenu.addItem(Theory::rootNames[i], i+1);
-    }
+    for(int i=0;i<17;i++) rootMenu.addItem(Theory::rootNames[i], i+1);
+    
     for_indexed(auto& mode : Theory::modeMap)
         scaleMenu.addItem(mode.first, (int)i+1);
     
@@ -135,11 +132,10 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
 }
 
 PianoRoll1AudioProcessorEditor::~PianoRoll1AudioProcessorEditor()
-{    
+{
     processor.treeState.removeParameterListener(PRESET_ID, this);
     processor.treeState.removeParameterListener(TRACK_ID, this);
     processor.treeState.removeParameterListener(BEATS_ID, this);
-    processor.playPosition.removeListener(this);
 }
 //==============================================================================
 
@@ -160,7 +156,7 @@ void PianoRoll1AudioProcessorEditor::paint (Graphics& g)
     g.fillAll(greyOff);
     
     tripletSwitches.clear();
-    drawTripletSwitches(&g, numOfBeats, height, width);
+    drawTripletSwitches(g, numOfBeats, height, width);
 
     if(topBorder){
         //PRESET SLIDER "PRESET" LABEL
@@ -220,7 +216,7 @@ void PianoRoll1AudioProcessorEditor::paint (Graphics& g)
 
 //==============================================================================
 
-void PianoRoll1AudioProcessorEditor::drawTripletSwitches(Graphics * g, const int numOfBeats, const float height, const float width){
+void PianoRoll1AudioProcessorEditor::drawTripletSwitches(Graphics& g, const int numOfBeats, const float height, const float width){
     const float beatWidth = (pianoRoll.getWidth() / ((float)numOfBeats) );
     const float ellipseWidth = beatWidth*0.333;
     const float ellipseHeight = height * topBorder * 0.225;
@@ -231,12 +227,12 @@ void PianoRoll1AudioProcessorEditor::drawTripletSwitches(Graphics * g, const int
         
         
         if(presets[currentPreset]->tracks[currentTrack]->beatSwitch[beat] == 0){
-            g->setColour(Colour(156,168,152)); //If not a triplet
-        }else{g->setColour(Colours::limegreen);} //If a triplet.
+            g.setColour(Colour(156,168,152)); //If not a triplet
+        }else{g.setColour(Colours::limegreen);} //If a triplet.
         
-        g->fillEllipse(x, y, ellipseWidth, ellipseHeight);
-        g->setColour(Colours::black);
-        g->drawEllipse(x, y, ellipseWidth, ellipseHeight, 1.);
+        g.fillEllipse(x, y, ellipseWidth, ellipseHeight);
+        g.setColour(Colours::black);
+        g.drawEllipse(x, y, ellipseWidth, ellipseHeight, 1.);
         tripletSwitches.add(Array<float>{x+(ellipseWidth/2), y + (ellipseHeight/2)});
     }
     
@@ -412,6 +408,7 @@ void PianoRoll1AudioProcessorEditor::mouseDown(const juce::MouseEvent &event){
         float y = getMouseXYRelative().getY();
         float width = getWidth();
         float height = getHeight();
+        auto thisTrack = processor.presets[currentPreset]->tracks[currentTrack];
         
         for(int beat=0; beat<tripletSwitches.size(); beat++){
             float difX = fabsf( x - tripletSwitches[beat][0] );
@@ -420,14 +417,10 @@ void PianoRoll1AudioProcessorEditor::mouseDown(const juce::MouseEvent &event){
             if (beatsClicked.contains(beat) == false){ //If hasn't already been clicked or dragged over.
                 if(difX < width/20 && difY < height/20){ //If close enough to the beat switch.
                     //if(pianoRoll.presets[currentPreset]->tracks[currentTrack]->beatSwitch[beat] == 0){
-                    if(processor.presets[currentPreset]->tracks[currentTrack]->beatSwitch[beat] == 0){
-                        processor.presets[currentPreset]->tracks[currentTrack]->beatSwitch.set(beat, 1);
-                        pianoRoll.presets[currentPreset]->tracks[currentTrack]->beatSwitch.set(beat, 1);
-                        volumePanel.presets[currentPreset]->tracks[currentTrack]->beatSwitch.set(beat, 1);
+                    if(thisTrack->beatSwitch[beat] == 0){
+                        thisTrack->beatSwitch.set(beat, 1);
                     }else{
-                        processor.presets[currentPreset]->tracks[currentTrack]->beatSwitch.set(beat, 0);
-                        pianoRoll.presets[currentPreset]->tracks[currentTrack]->beatSwitch.set(beat, 0);
-                        volumePanel.presets[currentPreset]->tracks[currentTrack]->beatSwitch.set(beat, 0);
+                        thisTrack->beatSwitch.set(beat, 0);
                     }
                     
                     beatsClicked.add(beat);
@@ -451,11 +444,12 @@ void PianoRoll1AudioProcessorEditor::sliderValueChanged(juce::Slider *slider){
 
 
 void PianoRoll1AudioProcessorEditor::valueChanged(juce::Value &value){
-    if(value.refersToSameSourceAs(processor.playPosition)){
-        auto val = value.getValue();
-        float floatVal = val.toString().getFloatValue();
-        playCursorWindow.setPlayCursor(floatVal);
-    }else if(value.refersToSameSourceAs(noteName)){
+//    if(value.refersToSameSourceAs(processor.playPosition)){
+//        auto val = value.getValue();
+//        float floatVal = val.toString().getFloatValue();
+//        playCursorWindow.setPlayCursor(floatVal);
+//    }else
+    if(value.refersToSameSourceAs(noteName)){
         repaint();
     }
     
@@ -494,8 +488,8 @@ void PianoRoll1AudioProcessorEditor::rootMenuChanged(){
     const String rootName = rootMenu.getText();
     
     processor.root = Theory::rootNameMap.at(rootName);
-    processor.presets[currentPreset]->root = processor.root;
-    processor.presets[currentPreset]->rootName = rootName;
+    presets[currentPreset]->root = processor.root;
+    presets[currentPreset]->rootName = rootName;
     scaleMenuChanged();
 }
 
@@ -510,7 +504,7 @@ void PianoRoll1AudioProcessorEditor::scaleMenuChanged(){
     processor.presets[currentPreset]->currentMode = scaleName;
     
     auto [modeNotes, enharmIndex, intervals] = Theory::modeMap.at(scaleName);
-    const String rootName = processor.presets[currentPreset]->rootName;
+    const String rootName = presets[currentPreset]->rootName;
     
     //rootDiatonicValues are {diatonicValue, diatonicMod} e.g. {0, 1} would be C#. 0 is considered natural.
     const auto& [rootDiatonicVal, rootDiatonicMod] = Theory::noteNameToDiatonicValue(rootName);
@@ -560,13 +554,13 @@ void PianoRoll1AudioProcessorEditor::monoPolyMenuChanged(){
 
 void PianoRoll1AudioProcessorEditor::generatorMenuChanged(){
     generatorMenu.getText() == "random" ? arpDirectionMenu.setVisible(false): arpDirectionMenu.setVisible(true);
-    processor.presets[processor.currentPreset]->generatorType = generatorMenu.getText();
+    presets[processor.currentPreset]->generatorType = generatorMenu.getText();
     
     buttonClicked(&generateButton);
 }
 
 void PianoRoll1AudioProcessorEditor::arpDirectionMenuChanged(){
-    processor.presets[processor.currentPreset]->arpType = arpDirectionMenu.getText();
+    presets[processor.currentPreset]->arpType = arpDirectionMenu.getText();
     buttonClicked(&generateButton);
 }
 

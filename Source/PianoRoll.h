@@ -28,7 +28,7 @@ public:
     
     
     
-    PianoRoll(OwnedArray<Preset> * processorPresetLocation, Staff * auditionStaffLocation, PianoRollComponent * pianoKeyLocation);
+    PianoRoll(Staff& auditionStaffLocation, PianoRollComponent& pianoKeyLocation);
     ~PianoRoll();
     
     int topNote;
@@ -65,8 +65,8 @@ private:
     std::pair<int, int> polySelectedNote; //col, pitch
     bool canScroll;
     bool isChildOfBeatCanvas;
-    PianoRollComponent * pianoKeys;
-    Staff * auditionStaff;
+    PianoRollComponent& pianoKeys;
+    Staff& auditionStaff;
     int prevPitch;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll)
@@ -79,10 +79,10 @@ class PianoKeys    : public Component,
                      public PianoRollComponent
 {
 public:
-    PianoRoll * pianoRoll;
-    Staff * auditionStaff;
+    PianoRoll& pianoRoll;
+    Staff& auditionStaff;
     
-    PianoKeys(PianoRoll * pianoRollInput);
+    PianoKeys(PianoRoll& pianoRollInput, Staff& auditionStaff);
     
 private:
     void paint (Graphics&) override;

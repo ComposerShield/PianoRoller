@@ -31,7 +31,6 @@ PianoRoll1AudioProcessor::PianoRoll1AudioProcessor()
         })
 #endif
 {
-    processorPresets = &presets;
     
     NormalisableRange<float> presetRange(1.0f,(float) PianoRollComponent::numOfPresets);
     NormalisableRange<float> trackRange(1.0f,(float) PianoRollComponent::numOfTracks);
@@ -49,12 +48,15 @@ PianoRoll1AudioProcessor::PianoRoll1AudioProcessor()
     midiStream.ensureStorageAllocated(36);
     midiInstrumentStream.ensureStorageAllocated(88);
     notesToIgnore.ensureStorageAllocated(36);
-
+    
 }
 
 PianoRoll1AudioProcessor::~PianoRoll1AudioProcessor()
 {
+    //presets.clear();
     juce::OSCReceiver::removeListener(this);
+    
+    
 }
 
 //==============================================================================

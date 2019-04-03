@@ -10,10 +10,10 @@
 
 #include "MusicStaff.h"
 
-Staff::Staff(OwnedArray<Preset> * processorPresetLocation, int * currentPresetPointer){
-    processorPresets = processorPresetLocation;
-    currentPreset = currentPresetPointer;
+Staff::Staff(){
+
 }
+
 
 
 
@@ -44,8 +44,8 @@ void Staff::paint(juce::Graphics &g){
         return returnVal;
     }();
     
-    const String modeName = (*processorPresets)[*currentPreset]->currentMode;
-    const int root = (*processorPresets)[*currentPreset]->root;
+    const String modeName = presets[currentPreset]->currentMode;
+    const int root = presets[currentPreset]->root;
     Theory::Mode mode = Theory::modeMap.at(modeName);
     auto [modeNotes, enharmIndex, intervals] = mode;
     
@@ -87,6 +87,7 @@ void Staff::paint(juce::Graphics &g){
                 case DOUBLE_FLAT: return "bb";
                 case NATURAL: return "";
                 case COURTESY_NATURAL: DBG("dsgdfgsfh\negfergre\nsasd"); return "n";
+                case NO_PREFERENCE: jassertfalse;
             }
             return "";
         }();

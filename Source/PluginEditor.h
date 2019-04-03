@@ -42,9 +42,9 @@ public:
     ~PianoRoll1AudioProcessorEditor();
     PianoRoll1AudioProcessor& processor; //Our audio processor
     
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> presetSliderAttach;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> trackSliderAttach;
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> beatSliderAttach;
+//    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> presetSliderAttach;
+//    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> trackSliderAttach;
+//    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> beatSliderAttach;
     
     const Colour greyOff = Colour(128,128,128);
     const Colour whiteBlue = Colour(195,223,226);
@@ -95,6 +95,10 @@ private:
     Slider presetSlider;
     Slider trackSlider;
     Slider beatSlider;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> presetSliderAttach;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> trackSliderAttach;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> beatSliderAttach;
+    
     
     int currentNumOfBeats;
     int internalBeat;
@@ -125,7 +129,7 @@ private:
     void buttonClicked (Button*) override;
     
     void paint (Graphics&) override;
-    void drawTripletSwitches(Graphics * g, const int numOfBeats, const float height, const float width);
+    void drawTripletSwitches(Graphics& g, const int numOfBeats, const float height, const float width);
     
     void addItemsToMenu(ComboBox& comboBox, Array<String> list);
     
@@ -135,4 +139,10 @@ private:
     // access the processor object that created it.
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll1AudioProcessorEditor)
+};
+
+struct SliderWithAttachment
+{
+    ScopedPointer <Slider> slider;
+    ScopedPointer <juce::AudioProcessorValueTreeState::SliderAttachment> attachment;
 };

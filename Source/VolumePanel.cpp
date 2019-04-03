@@ -11,8 +11,7 @@
 #include "VolumePanel.h"
 
 
-VolumePanel::VolumePanel(OwnedArray<Preset> * processorPresetLocation){
-    processorPresets = processorPresetLocation;
+VolumePanel::VolumePanel(){
     setOpaque(true);
     
     if (! sender.connect ("127.0.0.1", 9001)) // [4]

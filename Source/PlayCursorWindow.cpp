@@ -12,8 +12,9 @@
 
 
 
-PlayCursorWindow::PlayCursorWindow(AudioPlayHead::CurrentPositionInfo * positionInfoLocation){
-    currentPositionInfo = positionInfoLocation;
+PlayCursorWindow::PlayCursorWindow(AudioPlayHead::CurrentPositionInfo& positionInfoLocation) :
+currentPositionInfo(positionInfoLocation)
+{
     setInterceptsMouseClicks(false, false);
     playCursorLine = 0.0f;
     setAlwaysOnTop(true);
@@ -32,7 +33,7 @@ void PlayCursorWindow::setPlayCursor(float val){
 }
 
 void PlayCursorWindow::timerCallback(){
-    bool isPlaying = currentPositionInfo->isPlaying;
+    bool isPlaying = currentPositionInfo.isPlaying;
     currentPositionMarker.setVisible(isPlaying);
     
     currentPositionMarker.setRectangle(Rectangle<float>(getWidth() * playCursorLine,

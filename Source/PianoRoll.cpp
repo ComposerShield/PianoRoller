@@ -16,13 +16,11 @@
 
 
 
-PianoRoll::PianoRoll(OwnedArray<Preset> * processorPresetLocation, Staff * auditionStaffLocation, PianoRollComponent * pianoKeyLocation)
+PianoRoll::PianoRoll(Staff& auditionStaff, PianoRollComponent& pianoKeys) : pianoKeys(pianoKeys),
+                                                                            auditionStaff(auditionStaff)
 {
     topNote = 84;
     canScroll = true;
-    processorPresets = processorPresetLocation;
-    auditionStaff = auditionStaffLocation;
-    pianoKeys = pianoKeyLocation;
     isChildOfBeatCanvas = false;
     isDoubleClick = false;
     setOpaque(true);
@@ -39,7 +37,7 @@ PianoRoll::~PianoRoll(){
 
 void PianoRoll::paint (Graphics& g)
 {
-    const int numOfBeats = (*processorPresets)[currentPreset]->numOfBeats;
+    const int numOfBeats = presets[currentPreset]->numOfBeats;
     const int rootRow = topNote-65;
     const float width = getWidth();
     const float height = getHeight();
@@ -191,8 +189,8 @@ void PianoRoll::mouseDown(const MouseEvent& event){
 
     if(pitch<128 && pitch>8){
         //Scroll up and down
-        if     (pitch>topNote)          {topNote = pitch;           auditionStaff->repaint();}
-        else if(pitch<topNote-numOfRows){topNote = pitch+numOfRows; auditionStaff->repaint();}
+        if     (pitch>topNote)          {topNote = pitch;           auditionStaff.repaint();}
+        else if(pitch<topNote-numOfRows){topNote = pitch+numOfRows; auditionStaff.repaint();}
         
         isMono() ? monoWriteNote(thisCol, pitch, beatSwitch, event)
                  : polyWriteNote(thisCol, pitch, beatSwitch, event);
@@ -200,8 +198,8 @@ void PianoRoll::mouseDown(const MouseEvent& event){
         prevPitch = pitch;
     }
     
-    auditionStaff->notes.clear();
-    auditionStaff->notes.push_back(NoteHead(pitch, diatonicNoteValue, -1, false));
+    auditionStaff.notes.clear();
+    auditionStaff.notes.push_back(NoteHead(pitch, diatonicNoteValue, -1, false));
     
     repaint();
 }
@@ -279,14 +277,18 @@ void PianoRoll::changeBeatCanvasTriplet(const int beat, const int val){
 
 
 //=============================================================================================================
+////=========================================PIANO KEYS========================================================
+//=============================================================================================================
 
-PianoKeys::PianoKeys(PianoRoll * pianoRollInput){
-    pianoRoll = pianoRollInput;
+PianoKeys::PianoKeys(PianoRoll& pianoRollInput, Staff& auditionStaff) : pianoRoll(pianoRollInput),
+                                                                        auditionStaff(auditionStaff)
+{
+
 }
 
 
 void PianoKeys::paint(juce::Graphics &g){
-    const float topNote = pianoRoll->topNote;
+    const float topNote = pianoRoll.topNote;
     const float width = getWidth();
     const float height = getHeight();
     const float noteHeight = ( height / (float)numOfRows );
