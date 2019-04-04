@@ -19,6 +19,8 @@
 //==============================================================================
 
 
+class PianoKeys;
+
 
 
 class PianoRoll    : public Component,
@@ -26,9 +28,7 @@ class PianoRoll    : public Component,
 {
 public:
     
-    
-    
-    PianoRoll(Staff& auditionStaffLocation, PianoRollComponent& pianoKeyLocation);
+    PianoRoll(Staff& auditionStaffLocation, PianoKeys& pianoKeyLocation);
     ~PianoRoll();
     
     int topNote;
@@ -65,7 +65,7 @@ private:
     std::pair<int, int> polySelectedNote; //col, pitch
     bool canScroll;
     bool isChildOfBeatCanvas;
-    PianoRollComponent& pianoKeys;
+    PianoKeys& pianoKeys;
     Staff& auditionStaff;
     int prevPitch;
     
@@ -84,6 +84,8 @@ public:
     
     PianoKeys(PianoRoll& pianoRollInput, Staff& auditionStaff);
     
+    int selectedKey;
+    
 private:
     void paint (Graphics&) override;
     void drawRows(PaintData p);
@@ -93,6 +95,5 @@ private:
     
     int currentSelectedKey;
     int topNote;
-    
 };
 

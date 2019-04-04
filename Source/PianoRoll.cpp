@@ -16,8 +16,8 @@
 
 
 
-PianoRoll::PianoRoll(Staff& auditionStaff, PianoRollComponent& pianoKeys) : pianoKeys(pianoKeys),
-                                                                            auditionStaff(auditionStaff)
+PianoRoll::PianoRoll(Staff& auditionStaff, PianoKeys& pianoKeys) : pianoKeys(pianoKeys),
+                                                                   auditionStaff(auditionStaff)
 {
     topNote = 84;
     canScroll = true;
@@ -200,6 +200,7 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     
     auditionStaff.notes.clear();
     auditionStaff.notes.push_back(NoteHead(pitch, diatonicNoteValue, -1, false));
+    pianoKeys.selectedKey = pitch;
     
     repaint();
 }
@@ -306,15 +307,16 @@ void PianoKeys::drawRows(PaintData p){
     for(int row=0; row<numOfRows; row++){
         const int pitch = p.topNote-row;
         const float yPosition = row * p.noteHeight;
+        const bool isSelectedKey = selectedKey==pitch;
         
         if (checkIfBlackKey(pitch)){
-            p.g.setColour (Colours::darkgrey);
+            p.g.setColour ( (isSelectedKey) ? PianoRollerColours::whiteBlue : Colours::darkgrey );
             p.g.fillRect(0.0f,yPosition,p.width*0.666, p.noteHeight);
             p.g.setColour (Colours::black);
             p.g.drawRect(0.0f,yPosition,p.width*0.66, p.noteHeight);
             
         }else{ //is a White Key
-            p.g.setColour (PianoRollerColours::beatCanvasJungleGreen);
+            p.g.setColour ((isSelectedKey) ? PianoRollerColours::whiteBlue : PianoRollerColours::beatCanvasJungleGreen );
             p.g.fillRect(0.0f,yPosition,p.width, p.noteHeight);
             
             p.g.setColour (Colours::black);

@@ -801,7 +801,7 @@ private:
     template <class OtherObjectClass, class OtherCriticalSection>
     friend class OwnedArray;
 
-    //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OwnedArray)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OwnedArray)
 };
 
 } // namespace juce

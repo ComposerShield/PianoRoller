@@ -196,9 +196,10 @@ void PianoRoll1AudioProcessorEditor::paint (Graphics& g)
             
             g.setFont((height + width) / 100);
             g.drawText(noteName.getValue().toString(), noteNameX, noteNameY, pianoKeyWidth*width, noteNameHeight, Justification::centred);
-            if (midiNoteNum)
+            if (midiNoteNum){
                 g.setFont((height + width) / 120);
                 g.drawText((String)midiNoteNum, noteNameX, midiNoteNumY, pianoKeyWidth*width, noteNameHeight, Justification::centred);
+            }
             g.drawRoundedRectangle(noteNameX + pianoKeyWidth*width*0.04, noteNameY, pianoKeyWidth*width*0.92, noteNameHeight, 10.0f, 1.0f);
             
         }else{
