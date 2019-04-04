@@ -143,6 +143,16 @@ public:
     int beatSwitchToDiv(int beatSwitch);
     std::pair<bool, bool> getClicks(MouseEvent event, bool isDoubleClick);
     
+    template<typename T>
+    constexpr bool inclusiveRange(T val, T lower, T upper){
+        return (val >= lower && val <= upper);
+    }
+    
+    template<typename T>
+    constexpr bool exclusiveRange(T val, T lower, T upper){
+        return (val > lower && val < upper);
+    }
+    
     //==================PAINTING FUNCTIONS==================
     void drawColumnLine(PaintData p, const int subDiv, const int col, const float noteWidth);
     

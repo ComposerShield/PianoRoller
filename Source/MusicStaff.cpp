@@ -28,13 +28,14 @@ void Staff::paint(juce::Graphics &g){
     const float noteSpacing = clefSpacing * 0.5f;
     const float clefHeight = [&]()->float{
         if (isTreble) return height*0.11f;
-        else return height * -0.19f;
+        else return height * -0.1f;
     }();
     const float noteHeight = height*0.1;
     const float noteWidth = noteHeight*1.5f;
     const String clefText = [&]()->String{
         if (isTreble) return "&";
         else return "?";
+        
     }();
     const uint8 bottomNote = [&]()->uint8{
         uint8 returnVal;

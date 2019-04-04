@@ -67,6 +67,8 @@ private:
     bool isChildOfBeatCanvas;
     PianoKeys& pianoKeys;
     Staff& auditionStaff;
+    Clef clefDisplay(int pitch);
+    
     int prevPitch;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll)

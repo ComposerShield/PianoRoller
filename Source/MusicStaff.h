@@ -70,10 +70,9 @@ public:
     std::vector<NoteHead> notes;
     
     Staff();
-    
+    Clef clef = TREBLE;
     
 private:
-    Clef clef = TREBLE;
     OpusLookAndFeel opusLookAndFeel;
     
     void paint(Graphics& g) override;

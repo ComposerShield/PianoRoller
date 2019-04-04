@@ -200,7 +200,9 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     
     auditionStaff.notes.clear();
     auditionStaff.notes.push_back(NoteHead(pitch, diatonicNoteValue, -1, false));
+    auditionStaff.clef = clefDisplay(pitch);
     pianoKeys.selectedKey = pitch;
+    
     
     repaint();
 }
@@ -275,6 +277,15 @@ void PianoRoll::changeBeatCanvasTriplet(const int beat, const int val){
     BeatCanvasOSC_MessageOut("/BeatCanvas/changeRhythmDiv", currentTrack, beat, val);
 }
 
+Clef PianoRoll::clefDisplay(int pitch){
+    if      (inclusiveRange(pitch, 60, 84)) return TREBLE;
+    else if (inclusiveRange(pitch, 85, 96)) return TREBLE_8VA;
+    else if (inclusiveRange(pitch, 85, 127)) return TREBLE_15MA;
+    else if (inclusiveRange(pitch, 36, 59)) return BASS;
+    else if (inclusiveRange(pitch, 24, 35)) return BASS_8VA;
+    else if (inclusiveRange(pitch, 1, 35)) return BASS_15MA;
+    else return TREBLE;
+}
 
 
 //=============================================================================================================
