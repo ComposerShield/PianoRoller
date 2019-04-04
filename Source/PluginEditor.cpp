@@ -653,6 +653,7 @@ void PianoRoll1AudioProcessorEditor::buttonClicked(Button*){
 //        }
 //    }
     
+    pianoKeys.selectedKey=0;
     repaint();
 }
 

@@ -69,8 +69,8 @@ void PianoRollComponent::updateNumOfBeats(int beats){
 }
 
 void PianoRollComponent::updateNumOfBeats(int beats, const int preset){
-    beats = limitRange(beats, 1, maxBeats);
-    updateNumOfBeats(beats);
+    jassert(inclusiveRange(beats, 1, maxBeats));
+    presets[currentPreset]->numOfBeats = beats;
 }
 
 void PianoRollComponent::changeRhythmDiv(int track, int beat, int beatSwitch){

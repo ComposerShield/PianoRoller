@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-
-#ifndef MUSIC_THEORY_HEADER
-#define MUSIC_THEORY_HEADER
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -316,13 +313,6 @@ namespace Theory{
     }
 };
 
-
-
-
-
-
-
-#endif /* MUSIC_THEORY_HEADER */
 
 
 

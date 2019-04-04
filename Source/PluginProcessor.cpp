@@ -358,7 +358,7 @@ void PianoRoll1AudioProcessor::midiInputStreamToNoteArrays(){
 
 void PianoRoll1AudioProcessor::checkIfNoteGridPassed(int &sixteenthCounter, int &sixteenth, int &tripletCounter,
                                                      int &triplet, const int valDecimals){
-    if(valDecimals>=0.0f && valDecimals<0.25f && sixteenthCounter == 3){
+    if(exclusiveRange<float>(valDecimals, 0.0f, 0.25f) && sixteenthCounter == 3){
         sixteenthCounter = 0;
         sixteenth = beatIndex*4;
         prepToPlayNote(sixteenth, 4);
@@ -376,7 +376,7 @@ void PianoRoll1AudioProcessor::checkIfNoteGridPassed(int &sixteenthCounter, int 
         prepToPlayNote(sixteenth, 4);
     }
     
-    if(valDecimals>=0.0f && valDecimals<0.33f && tripletCounter == 2){
+    if(exclusiveRange<float>(valDecimals, 0.0f, 0.33f) && tripletCounter == 2){
         tripletCounter = 0;
         triplet = beatIndex*3;
         prepToPlayNote(triplet, 3);
@@ -435,25 +435,25 @@ void PianoRoll1AudioProcessor::oscMessageReceived(const juce::OSCMessage &Messag
         }
         
         
-        if(Message[0].getString() == "changeRhythmDiv"){
+        else if(Message[0].getString() == "changeRhythmDiv"){
             int track = Message[1].getInt32();
             int beat = Message[2].getInt32();
             int beatSwitch = Message[3].getInt32();
             changeRhythmDiv(track, beat, beatSwitch);
         }
         
-        if(Message[0].getString() == "currentPreset"){
+        else if(Message[0].getString() == "currentPreset"){
             int preset = Message[1].getInt32();
             updatePreset(preset);
         }
-        if(Message[0].getString() == "currentTrack"){
+        else if(Message[0].getString() == "currentTrack"){
             int track = Message[1].getInt32();
             updateTrack(track);
 
         }
         
         //void PianoRollComponent::noteOnOff(int track, int div, int note, int onOff)
-        if(Message[0].getString() == "noteOnOff"){
+        else if(Message[0].getString() == "noteOnOff"){
             int track = Message[1].getInt32();
             int div = Message[2].getInt32();
             int note = Message[3].getInt32();
@@ -462,14 +462,14 @@ void PianoRoll1AudioProcessor::oscMessageReceived(const juce::OSCMessage &Messag
         }
         
         //void PianoRollComponent::copyPreset(int presetSource, int presetReplaced)
-        if(Message[0].getString() == "copyPresets"){
+        else if(Message[0].getString() == "copyPresets"){
             int presetSource = Message[1].getInt32();
             int presetReplaced = Message[2].getInt32();
             copyPreset(presetSource, presetReplaced);
         }
         
         //setPitch(const int track, const int div, const int note, const int pitch, const int preset)
-        if(Message[0].getString() == "setPitch"){
+        else if(Message[0].getString() == "setPitch"){
             int track = Message[1].getInt32();
             int div = Message[2].getInt32();
             int note = Message[3].getInt32();

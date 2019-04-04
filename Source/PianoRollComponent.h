@@ -150,7 +150,7 @@ public:
     
     template<typename T>
     constexpr bool exclusiveRange(T val, T lower, T upper){
-        return (val > lower && val < upper);
+        return (val >= lower && val < upper);
     }
     
     //==================PAINTING FUNCTIONS==================
