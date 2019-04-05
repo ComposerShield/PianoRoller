@@ -151,9 +151,12 @@ bool PianoRollComponent::isMono(){
 }
 
 std::pair<bool, bool> PianoRollComponent::getClicks(MouseEvent event, bool isDoubleClick){
+    bool isMac = (SystemStats::getOperatingSystemType() & juce::SystemStats::MacOSX) != 0;
     return std::make_pair(event.mods.isLeftButtonDown(),
                           event.mods.isRightButtonDown() ||
                           isDoubleClick                  ||
-                          event.mods.isCommandDown());
+                          (isMac ? event.mods.isCommandDown()
+                                 : event.mods.isCtrlDown()));
+
 }
 
