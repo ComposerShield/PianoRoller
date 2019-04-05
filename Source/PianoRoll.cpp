@@ -201,17 +201,18 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     auditionStaff.notes.clear();
     auditionStaff.notes.push_back(NoteHead(pitch, diatonicNoteValue, -1, false));
     auditionStaff.clef = clefDisplay(pitch);
-    pianoKeys.selectedKey = pitch;
+    pianoKeys.selectedKey = (getClicks(event, isDoubleClick).second) ? 0 : pitch;
     
-    
+    isDoubleClick=false;
+    pianoKeys.repaint();
     repaint();
 }
 
 void PianoRoll::monoWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event){
     const auto [leftClick, rightClick] = getClicks(event, isDoubleClick);
     const int beatDiv = beatSwitchToDiv(beatSwitch);
-    
-    if(pitch != prevPitch && leftClick){
+
+    if(!rightClick){
         updateNote(thisCol, pitch, beatSwitch);
         String newNoteName = Theory::setClassToPitchName[pitch%12];
         noteName->setValue(newNoteName);
@@ -228,6 +229,7 @@ void PianoRoll::monoWriteNote(const int thisCol, const int pitch, const int beat
             )
     {
         updateNote(thisCol, prevPitch, beatSwitch, false);
+        
         //========Send to BeatCanvasJava.Java=======
         //public void noteOnOff(int track, int div, int note, int onOff)
         BeatCanvasOSC_MessageOut("/BeatCanvas/noteOnOff",currentTrack, beatDiv, thisCol, 0);

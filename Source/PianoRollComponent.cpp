@@ -152,6 +152,8 @@ bool PianoRollComponent::isMono(){
 
 std::pair<bool, bool> PianoRollComponent::getClicks(MouseEvent event, bool isDoubleClick){
     return std::make_pair(event.mods.isLeftButtonDown(),
-                          event.mods.isRightButtonDown() || isDoubleClick);
+                          event.mods.isRightButtonDown() ||
+                          isDoubleClick                  ||
+                          event.mods.isCommandDown());
 }
 
