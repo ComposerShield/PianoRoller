@@ -32,9 +32,9 @@ PianoRoll1AudioProcessor::PianoRoll1AudioProcessor()
 #endif
 {
     
-    NormalisableRange<float> presetRange(1.0f,(float) PianoRollComponent::numOfPresets);
-    NormalisableRange<float> trackRange(1.0f,(float) PianoRollComponent::numOfTracks);
-    NormalisableRange<float> beatsRange(1.0f, (float) PianoRollComponent::maxBeats);
+    NormalisableRange<float> presetRange( 1.0f, static_cast<float>(PianoRollComponent::numOfPresets) );
+    NormalisableRange<float> trackRange ( 1.0f, static_cast<float>(PianoRollComponent::numOfTracks)  );
+    NormalisableRange<float> beatsRange ( 1.0f, static_cast<float>(PianoRollComponent::maxBeats)     );
     
     //Value Tree State===========================================================
     treeState.addParameterListener(PRESET_ID, this); //Adds listener to preset slider tree value.
@@ -219,7 +219,7 @@ void PianoRoll1AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
                 notesToIgnore.removeAllInstancesOf(thisPitch);
             }else{
                 midiMessages.addEvent(MidiMessage::noteOff(1, thisPitch), midiStart);
-                midiMessages.addEvent(MidiMessage::noteOn(1, thisPitch, (uint8) thisVol), midiStart);
+                midiMessages.addEvent(MidiMessage::noteOn(1, thisPitch, static_cast<uint8>(thisVol)), midiStart);
             }
         }
         midiStream.clearQuick();
@@ -308,7 +308,7 @@ void PianoRoll1AudioProcessor::sequencerCheck(juce::Value &value){
         beatIndex = (beatIndex+1) % presets[currentPreset]->numOfBeats;
     }
     
-    currentBeat = (float)beatIndex + valDecimals;
+    currentBeat = static_cast<float>(beatIndex) + valDecimals;
     
     midiInputStreamToNoteArrays();
     
@@ -323,7 +323,7 @@ void PianoRoll1AudioProcessor::sequencerCheck(juce::Value &value){
     
     const int currentNumOfBeats = presets[currentPreset]->numOfBeats;
 
-    playPosition.setValue(std::fmod(currentBeat, (float)currentNumOfBeats) / (float)currentNumOfBeats);
+    playPosition.setValue(std::fmod(currentBeat, static_cast<float>(currentNumOfBeats) ) / static_cast<float>(currentNumOfBeats) );
     previousVal = floatVal;
 }
 
@@ -337,8 +337,8 @@ void PianoRoll1AudioProcessor::midiInputStreamToNoteArrays(){
         uint8 pitch = midiInstrumentStream[0].first;
         uint8 vol = midiInstrumentStream[0].second;
         Array<int>newPitchArray;
-        float val = currentBeat*(float)div;
-        int roundedVal = (int)std::round(val) % (presets[currentPreset]->numOfBeats*div);
+        float val = currentBeat * static_cast<float>(div);
+        int roundedVal = ( static_cast<int>(std::round(val)) ) % (presets[currentPreset]->numOfBeats*div);
         
         if (isMono()){
             auto& [thisPitch, thisVol, active] = getMonoNote(roundedVal, beatSwitch);

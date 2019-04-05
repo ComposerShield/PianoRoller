@@ -18,7 +18,9 @@ currentPositionInfo(positionInfoLocation)
     setInterceptsMouseClicks(false, false);
     playCursorLine = 0.0f;
     setAlwaysOnTop(true);
-    startTimer(80);
+    
+    if (!JUCEApplication::isStandaloneApp())
+        startTimer(80);
     
     currentPositionMarker.setFill(Colours::yellow);
     addAndMakeVisible(&currentPositionMarker);

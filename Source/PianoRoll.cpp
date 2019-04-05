@@ -41,11 +41,12 @@ void PianoRoll::paint (Graphics& g)
     const int rootRow = topNote-65;
     const float width = getWidth();
     const float height = getHeight();
-    const float noteWidth = (width / ((float)numOfBeats * 4.0f) );
-    const float noteHeight = ( height / (float)numOfRows );
-    const float tripNoteWidth = width / ((float)numOfBeats * 3.0f);
+    const float noteWidth = (width / (static_cast<float>(numOfBeats) * 4.0f) );
+    const float noteHeight = ( height / static_cast<float>(numOfRows) );
+    const float tripNoteWidth = width / (static_cast<float>(numOfBeats) * 3.0f);
     
-    PaintData paintData{g, width, height, noteHeight, noteWidth, tripNoteWidth, (float)numOfBeats, (float)rootRow, (float)topNote};
+    PaintData paintData{g, width, height, noteHeight, noteWidth, tripNoteWidth,
+                        static_cast<float>(numOfBeats), static_cast<float>(rootRow), static_cast<float>(topNote)};
     
     g.fillAll (PianoRollerColours::beatCanvasJungleGreen); //BACKGROUND COLOR
     
@@ -80,7 +81,7 @@ void PianoRoll::drawRows(PaintData p){
 void PianoRoll::drawRowLines(PaintData p){
     p.g.setColour (Colours::black);
     for(int i=0;i<=numOfRows;i++){
-        const float yPosition = 0. + (i*p.height/(float)numOfRows);
+        const float yPosition = 0. + (i*p.height/static_cast<float>(numOfRows));
         p.g.setColour(Colours::black);
         p.g.drawLine(0., yPosition, p.width, yPosition);
         if(i==numOfRows || i==0){ //Reasons to draw a thicker line.
@@ -156,7 +157,7 @@ void PianoRoll::mouseWheelMove(const juce::MouseEvent &event, const juce::MouseW
     float verticalAdjust = wheel.deltaY * 50.0f;
     verticalAdjust = verticalAdjust < 0 ? floor(verticalAdjust) : ceil(verticalAdjust);
     
-    topNote = limitRange( (topNote + (int)verticalAdjust), 8+numOfRows, 127);
+    topNote = limitRange( ( topNote + static_cast<int>(verticalAdjust) ), 8+numOfRows, 127);
     repaint();
 }
 
@@ -178,9 +179,9 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     auto [x, y]= std::make_pair(getMouseXYRelative().getX(), getMouseXYRelative().getY());
     
     const int numOfBeats = presets[currentPreset]->numOfBeats;
-    const int row = (int) (y/(float)getHeight() * (float) numOfRows); //Final (int) cast rounds it down.
-    const int col = (int) (x/(float)getWidth() * (float) (numOfBeats*4)); //Final (int) cast rounds it down.
-    const int tripCol = (int) (x/(float)getWidth() * (float) (numOfBeats*3)); //Final (int) cast rounds it down.
+    const int row =     static_cast<int>( (y/(float)getHeight()* (float) (numOfRows))    ); //Final cast rounds it down.
+    const int col =     static_cast<int>( (x/(float)getWidth() * (float) (numOfBeats*4)) ); //Final cast rounds it down.
+    const int tripCol = static_cast<int>( (x/(float)getWidth() * (float) (numOfBeats*3)) ); //Final cast rounds it down.
     const int currentBeat = col / 4;
     const int beatSwitch = thisTrack->beatSwitch[currentBeat];
     const int pitch = topNote - row;

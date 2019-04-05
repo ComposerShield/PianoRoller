@@ -124,7 +124,7 @@ void PianoRollComponent::setPitch(const int track, const int div, const int note
 
 void PianoRollComponent::drawColumnLine(PaintData p, const int subDiv, const int col, const float noteWidth){
     const int lineWidth = (subDiv==0) ? 3 : 1;
-    const float xPosition = 0.0f + ( (float)col*noteWidth );
+    const float xPosition = 0.0f + ( static_cast<float>(col)*noteWidth );
     
     p.g.setColour(Colours::black);
     p.g.drawLine(xPosition, 0., xPosition, p.height, lineWidth);
