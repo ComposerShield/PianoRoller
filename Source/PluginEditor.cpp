@@ -83,6 +83,7 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     presetSlider.addMouseListener(this, true);
     beatSlider.addMouseListener(this, true);
     generateButton.addListener(this);
+    processor.playPosition.addListener(this);
     
     setWantsKeyboardFocus(true);
     addKeyListener(this);
@@ -445,12 +446,12 @@ void PianoRoll1AudioProcessorEditor::sliderValueChanged(juce::Slider *slider){
 
 
 void PianoRoll1AudioProcessorEditor::valueChanged(juce::Value &value){
-//    if(value.refersToSameSourceAs(processor.playPosition)){
-//        auto val = value.getValue();
-//        float floatVal = val.toString().getFloatValue();
-//        playCursorWindow.setPlayCursor(floatVal);
-//    }else
-    if(value.refersToSameSourceAs(noteName)){
+    if(value.refersToSameSourceAs(processor.playPosition)){
+        auto val = value.getValue();
+        float floatVal = val.toString().getFloatValue();
+        playCursorWindow.setPlayCursor(floatVal);
+    }
+    else if(value.refersToSameSourceAs(noteName)){
         repaint();
     }
     

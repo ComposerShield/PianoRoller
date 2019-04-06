@@ -103,7 +103,7 @@ public:
     float previousVal;
     int sixteenthCounter;
     int tripletCounter;
-    int beatIndex;
+    int beatIndex, sixteenth, triplet;
     void sequencerCheck(juce::Value &value);
     void resetAll();
     void rootChanged(const int root); //TODO
@@ -119,7 +119,7 @@ private:
     void oscMessageReceived(const OSCMessage &Message) override;
     
     void midiInputStreamToNoteArrays();
-    void checkIfNoteGridPassed(int& sixteenthCounter, int& sixteenth, int& tripletCounter, int& triplet, const int valDecimals);
+    void checkIfNoteGridPassed(const float valDecimals);
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll1AudioProcessor)

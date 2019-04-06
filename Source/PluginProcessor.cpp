@@ -164,8 +164,8 @@ bool PianoRoll1AudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 void PianoRoll1AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    if(isPlugin)
-        jassert (buffer.getNumChannels() == 0); //Set number of audio channels to 0
+    //if(isPlugin)
+    //    jassert (buffer.getNumChannels() == 0); //Set number of audio channels to 0
     
     const float numOfSamps = buffer.getNumSamples();
    
@@ -204,7 +204,6 @@ void PianoRoll1AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
                 midiInstrumentStream.add(std::make_pair(pitch, vol)); //Add to midi instrument stream.
             }
         }
-        //midiMessages.clear(); //Clear all midi messages because they will be added to the sequencer.
     }
     
     
@@ -214,7 +213,6 @@ void PianoRoll1AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     if(lastPosInfo.isPlaying){
         
         for(auto& [thisPitch, thisVol, active] : midiStream){
-            
             if(notesToIgnore.contains(thisPitch)){
                 notesToIgnore.removeAllInstancesOf(thisPitch);
             }else{
@@ -301,7 +299,6 @@ void PianoRoll1AudioProcessor::sequencerCheck(juce::Value &value){
     const float floatVal = val.toString().getFloatValue();
     float valDecimals = std::fmod(floatVal, 1.0f);
     const bool isPlaying = lastPosInfo.isPlaying;
-    int sixteenth, triplet;
     
     //Check if beat has changed (example: 1st to 2nd beat of measure.)
     if(previousVal != -1.0f && floor(previousVal) < floor(floatVal)){
@@ -313,7 +310,7 @@ void PianoRoll1AudioProcessor::sequencerCheck(juce::Value &value){
     midiInputStreamToNoteArrays();
     
     if(isPlaying){
-        checkIfNoteGridPassed(sixteenthCounter, sixteenth, tripletCounter, triplet, valDecimals);
+        checkIfNoteGridPassed(valDecimals);
     }else{
         beatIndex = 0;
         valDecimals = 0.0f;
@@ -356,9 +353,8 @@ void PianoRoll1AudioProcessor::midiInputStreamToNoteArrays(){
     }
 }
 
-void PianoRoll1AudioProcessor::checkIfNoteGridPassed(int &sixteenthCounter, int &sixteenth, int &tripletCounter,
-                                                     int &triplet, const int valDecimals){
-    if(exclusiveRange<float>(valDecimals, 0.0f, 0.25f) && sixteenthCounter == 3){
+void PianoRoll1AudioProcessor::checkIfNoteGridPassed(const float valDecimals){
+    if(valDecimals >= 0.0f && valDecimals < 0.25f && sixteenthCounter == 3){
         sixteenthCounter = 0;
         sixteenth = beatIndex*4;
         prepToPlayNote(sixteenth, 4);
@@ -376,7 +372,7 @@ void PianoRoll1AudioProcessor::checkIfNoteGridPassed(int &sixteenthCounter, int 
         prepToPlayNote(sixteenth, 4);
     }
     
-    if(exclusiveRange<float>(valDecimals, 0.0f, 0.33f) && tripletCounter == 2){
+    if(valDecimals >= 0.0f && valDecimals < 0.33f && tripletCounter == 2){
         tripletCounter = 0;
         triplet = beatIndex*3;
         prepToPlayNote(triplet, 3);
