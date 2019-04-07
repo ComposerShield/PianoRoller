@@ -311,6 +311,14 @@ namespace Theory{
             default: DBG("Unrecognized Accidental"); return NATURAL;
         }
     }
+    
+    inline const int getMajorFromModeMap = [](){
+        Array<String> scaleList;
+        for(auto& [modeName, modeLocation] : modeMap) scaleList.add(modeName);
+        scaleList.sort();
+        DBG("Major is at numer " + (String)scaleList.indexOf("Major"));
+        return scaleList.indexOf("Major");
+    }();
 };
 
 

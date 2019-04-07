@@ -98,7 +98,9 @@ private:
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> presetSliderAttach;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> trackSliderAttach;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> beatSliderAttach;
-    
+    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> rootAttach;
+    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> scaleAttach;
+    std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment> monoPolyAttach;
     
     int currentNumOfBeats;
     int internalBeat;

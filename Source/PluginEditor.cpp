@@ -61,9 +61,12 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
 
     
     //Setup Sliders===============================================================
-    presetSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState,PRESET_ID,presetSlider);
-    trackSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState,TRACK_ID,trackSlider);
-    beatSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState,BEATS_ID,beatSlider);
+    presetSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>  (processor.treeState,PRESET_ID,presetSlider);
+    trackSliderAttach =  std::make_unique<AudioProcessorValueTreeState::SliderAttachment>  (processor.treeState,TRACK_ID,trackSlider);
+    beatSliderAttach =   std::make_unique<AudioProcessorValueTreeState::SliderAttachment>  (processor.treeState,BEATS_ID,beatSlider);
+    rootAttach =         std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment>(processor.treeState,ROOT_ID,rootMenu);
+    scaleAttach =        std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment>(processor.treeState,SCALE_ID,scaleMenu);
+    monoPolyAttach =     std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment>(processor.treeState,MONOPOLY_ID,monoPolyMenu);
     
     presetSlider.setRange(1,numOfPresets,(int)1);
     trackSlider.setRange(1,numOfTracks,(int)1);
@@ -91,12 +94,13 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
 //    presetSlider.setValue(processor.currentPreset);
 //    trackSlider.setValue(processor.currentTrack);
 //    beatSlider.setValue(processor.presets[currentPreset]->numOfBeats);
+    
 
     //Fill Menus=================================================================
     for(int i=0;i<17;i++) rootMenu.addItem(Theory::rootNames[i], i+1);
     
     for_indexed(auto& mode : Theory::modeMap)
-        scaleMenu.addItem(mode.first, (int)i+1);
+        scaleMenu.addItem(mode.first, static_cast<int>(i)+1);
     
     addItemsToMenu(monoPolyMenu,    {"mono", "poly"});
     addItemsToMenu(generatorMenu,   {"random","arp16th", "arp16th Broken", "arp8th",
@@ -109,9 +113,17 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     getLookAndFeel().setColour(ComboBox::textColourId, Colours::black);
     getLookAndFeel().setColour(ComboBox::arrowColourId, Colours::black);
     
-    rootMenu.setSelectedItemIndex    (0, NotificationType::dontSendNotification);
-    monoPolyMenu.setSelectedItemIndex(0, NotificationType::dontSendNotification);
-    scaleMenu.setText("Major", NotificationType::dontSendNotification);
+    int val = processor.treeState.getParameterAsValue(SCALE_ID).getValue();
+    
+    DBG("THE SCALE INDEX VALUE IS " + static_cast<String>(val));
+    
+    rootMenu.setSelectedItemIndex(processor.treeState.getParameterAsValue(ROOT_ID).getValue(), NotificationType::dontSendNotification);
+    monoPolyMenu.setSelectedItemIndex(processor.treeState.getParameterAsValue(MONOPOLY_ID).getValue(), NotificationType::dontSendNotification);
+    //scaleMenu.setSelectedItemIndex(5, NotificationType::dontSendNotification);
+    String initScaleText = scaleMenu.getItemText( processor.treeState.getParameterAsValue(SCALE_ID).getValue() );
+    scaleMenu.setText(initScaleText);
+    DBG("Your scale is: " + initScaleText);
+    
     generatorMenu.setText("random", NotificationType::dontSendNotification);
     arpDirectionMenu.setText("ascend", NotificationType::dontSendNotification);
     rootMenu.onChange = [this] { rootMenuChanged(); };
@@ -137,6 +149,9 @@ PianoRoll1AudioProcessorEditor::~PianoRoll1AudioProcessorEditor()
     processor.treeState.removeParameterListener(PRESET_ID, this);
     processor.treeState.removeParameterListener(TRACK_ID, this);
     processor.treeState.removeParameterListener(BEATS_ID, this);
+    processor.treeState.removeParameterListener(ROOT_ID, this);
+    processor.treeState.removeParameterListener(SCALE_ID, this);
+    processor.treeState.removeParameterListener(MONOPOLY_ID, this);
 }
 //==============================================================================
 
@@ -335,7 +350,7 @@ void PianoRoll1AudioProcessorEditor::parameterChanged(const juce::String &parame
         pianoRoll.updatePreset(preset);
         volumePanel.updatePreset(preset);
         isMono() ? monoPoly="mono": monoPoly="poly";
-        monoPolyMenu.setText(monoPoly);
+//        monoPolyMenu.setText(monoPoly);
         repaint();
         
         currentPreset = preset;
@@ -343,10 +358,10 @@ void PianoRoll1AudioProcessorEditor::parameterChanged(const juce::String &parame
         currentNumOfBeats = processor.presets[currentPreset]->numOfBeats;
         beatSlider.setValue(currentNumOfBeats);
         presetToBeUpdated = preset;
-        rootMenu.setSelectedItemIndex(processor.presets[currentPreset]->root, NotificationType::dontSendNotification);
-        scaleMenu.setText(processor.presets[processor.currentPreset]->currentMode, NotificationType::dontSendNotification);
-        generatorMenu.setText(processor.presets[processor.currentPreset]->generatorType, NotificationType::dontSendNotification);
-        arpDirectionMenu.setText(processor.presets[processor.currentPreset]->arpType, NotificationType::dontSendNotification);
+//        rootMenu.setSelectedItemIndex(processor.presets[currentPreset]->root, NotificationType::dontSendNotification);
+//        scaleMenu.setText(processor.presets[processor.currentPreset]->currentMode, NotificationType::dontSendNotification);
+//        generatorMenu.setText(processor.presets[processor.currentPreset]->generatorType, NotificationType::dontSendNotification);
+//        arpDirectionMenu.setText(processor.presets[processor.currentPreset]->arpType, NotificationType::dontSendNotification);
         //pianoRoll.changeBeatCanvasPreset(preset);
         
     }

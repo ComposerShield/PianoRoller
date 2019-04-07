@@ -18,7 +18,12 @@
 #define TRACK_NAME "Current_Track"
 #define BEATS_ID "current_beats"
 #define BEATS_NAME "Current_Beats"
-
+#define ROOT_ID "Root"
+#define ROOT_NAME "root"
+#define SCALE_ID "Scale"
+#define SCALE_NAME "scale"
+#define MONOPOLY_ID "MonoPoly"
+#define MONOPOLY_NAME "monopoly"
 
 //==============================================================================
 /**
