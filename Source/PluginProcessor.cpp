@@ -89,7 +89,7 @@ bool PianoRoll1AudioProcessor::isMidiEffect() const
     return true;
    #else
     return false;
-   #endif
+   #endif 
 }
 
 double PianoRoll1AudioProcessor::getTailLengthSeconds() const
@@ -278,13 +278,15 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 void PianoRoll1AudioProcessor::prepToPlayNote(const int note, const int div){
     const int beatSwitch = divToBeatSwitch(div);
-    auto& [monoPitch, monoVol, active] = getMonoNote(note, beatSwitch);
-    
-    if(isMono() && active)
-        playNote(monoPitch, monoVol);
-    else if(!isMono()){ //isPoly
-        auto [pitches, polyVol] = getPolyNote(note, beatSwitch);
-        for(auto& pitch : pitches) playNote(pitch, polyVol);
+    if(presets[currentPreset]->tracks[currentTrack]->beatSwitch[note/div] == beatSwitch){
+        auto& [monoPitch, monoVol, active] = getMonoNote(note, beatSwitch);
+
+        if(isMono() && active)
+            playNote(monoPitch, monoVol);
+        else if(!isMono()){ //isPoly
+            auto [pitches, polyVol] = getPolyNote(note, beatSwitch);
+            for(auto& pitch : pitches) playNote(pitch, polyVol);
+        }
     }
 }
 

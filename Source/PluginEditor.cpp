@@ -88,9 +88,9 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     setWantsKeyboardFocus(true);
     addKeyListener(this);
     
-    presetSlider.setValue(processor.currentPreset);
-    trackSlider.setValue(processor.currentTrack);
-    beatSlider.setValue(processor.presets[currentPreset]->numOfBeats);
+//    presetSlider.setValue(processor.currentPreset);
+//    trackSlider.setValue(processor.currentTrack);
+//    beatSlider.setValue(processor.presets[currentPreset]->numOfBeats);
 
     //Fill Menus=================================================================
     for(int i=0;i<17;i++) rootMenu.addItem(Theory::rootNames[i], i+1);
