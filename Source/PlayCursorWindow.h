@@ -23,15 +23,16 @@ public:
     
     PlayCursorWindow(AudioPlayHead::CurrentPositionInfo& positionInfoLocation);
     
-    void paint(Graphics&) override;
+
     void setPlayCursor(float val);
-    float playCursorLine;
-    AudioPlayHead::CurrentPositionInfo& currentPositionInfo;
-    
-    DrawableRectangle currentPositionMarker;
     
 private:
+    float playCursorLine;
+    DrawableRectangle currentPositionMarker;
+    AudioPlayHead::CurrentPositionInfo& currentPositionInfo;
+    
     void timerCallback() override;
+    void paint(Graphics&) override;
 };
 
 

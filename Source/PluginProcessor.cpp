@@ -413,7 +413,12 @@ void PianoRoll1AudioProcessor::octaveShift(int numOfOctaves){
             for(auto &note : thisTrack->sixteenthNotes) note.pitch+=(numOfOctaves*12);
             for(auto &note : thisTrack->tripletNotes)   note.pitch+=(numOfOctaves*12);
         }else{ //isPoly
-            //TODO
+            for(auto &polyNote : thisTrack->polySixteenths)
+                for(auto& pitch : polyNote.pitches)
+                    pitch+=(numOfOctaves*12);
+            for(auto &polyNote : thisTrack->polyTriplets)
+                for(auto& pitch : polyNote.pitches)
+                    pitch+=(numOfOctaves*12);
         }
     }
 }

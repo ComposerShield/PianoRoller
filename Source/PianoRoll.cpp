@@ -113,7 +113,7 @@ void PianoRoll::drawNotes(PaintData p){
     }
 }
 
-constexpr void PianoRoll::monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
+constexpr void PianoRoll::monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth) const{
     auto& [pitch, vol, active] = getMonoNote(col, beatSwitch);
     if(active){ //If note is active.
         p.g.setColour (PianoRollerColours::whiteBlue);
@@ -123,7 +123,7 @@ constexpr void PianoRoll::monoNoteFill(PaintData p, const int col, const int bea
     }
 }
 
-constexpr void PianoRoll::polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
+constexpr void PianoRoll::polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth) const{
     //TODO******
     auto& [pitches, vol] = getPolyNote(col, beatSwitch);
     
