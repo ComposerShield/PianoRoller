@@ -155,7 +155,7 @@ PianoRoll1AudioProcessorEditor::~PianoRoll1AudioProcessorEditor()
 }
 //==============================================================================
 
-void PianoRoll1AudioProcessorEditor::addItemsToMenu(ComboBox &comboBox, Array<String> list){
+void PianoRoll1AudioProcessorEditor::addItemsToMenu(ComboBox &comboBox, const Array<String> list) const{
     for_indexed(auto& item : list)
         comboBox.addItem(item, (int)i+1);
 }

@@ -17,7 +17,9 @@ OwnedArray<PianoRollComponent::Preset> PianoRollComponent::presets = []()->Owned
     return output;
 }();
 
-constexpr Note& PianoRollComponent::getMonoNote(const int col, const int beatSwitch){
+bool PianoRollComponent::isChildOfBeatCanvas = false;
+
+constexpr Note& PianoRollComponent::getMonoNote(const int col, const int beatSwitch) const{
     switch(beatSwitch){
         case 0: return presets[currentPreset]->tracks[currentTrack]->sixteenthNotes.getReference(col); break;
         case 1: return presets[currentPreset]->tracks[currentTrack]->tripletNotes.getReference(col); break;
@@ -25,7 +27,7 @@ constexpr Note& PianoRollComponent::getMonoNote(const int col, const int beatSwi
     }
 }
 
-constexpr PolyNote& PianoRollComponent::getPolyNote(const int col, const int beatSwitch){
+constexpr PolyNote& PianoRollComponent::getPolyNote(const int col, const int beatSwitch) const{
     switch(beatSwitch){
         case 0: return {presets[currentPreset]->tracks[currentTrack]->polySixteenths.getReference(col)}; break;
         case 1: return {presets[currentPreset]->tracks[currentTrack]->polyTriplets.getReference(col)}; break;
@@ -78,10 +80,6 @@ void PianoRollComponent::changeRhythmDiv(int track, int beat, int beatSwitch){
 
 void PianoRollComponent::updatePreset(const int preset){
     currentPreset = preset;
-}
-
-int PianoRollComponent::midiLimit(const int midiVal){
-    return (midiVal < 0 ? 0 : midiVal) > 127 ? 127 : midiVal;
 }
 
 void PianoRollComponent::updateTrack(const int track){

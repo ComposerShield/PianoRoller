@@ -86,7 +86,6 @@ public:
     ComboBox arpDirectionMenu;
     TextButton generateButton;
     Random random;
-    bool isChildOfBeatCanvas;
     
 private:
     Slider presetSlider;
@@ -127,7 +126,7 @@ private:
     void paint (Graphics&) override;
     void drawTripletSwitches(Graphics& g, const int numOfBeats, const float height, const float width);
     
-    void addItemsToMenu(ComboBox& comboBox, Array<String> list);
+    void addItemsToMenu(ComboBox& comboBox, const Array<String> list) const;
     
     std::vector<int> brokenArpeggio(Array<int> currentScale);
     std::vector<int> previousOrder;

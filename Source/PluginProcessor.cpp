@@ -54,6 +54,7 @@ PianoRoll1AudioProcessor::PianoRoll1AudioProcessor()
     midiStream.ensureStorageAllocated(36);
     midiInstrumentStream.ensureStorageAllocated(88);
     notesToIgnore.ensureStorageAllocated(36);
+    activeNotes.ensureStorageAllocated(24);
     
 }
 
@@ -175,7 +176,6 @@ void PianoRoll1AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     
     const float numOfSamps = buffer.getNumSamples();
    
-    const int midiStart = midiMessages.getFirstEventTime();
     buffer.clear();
     
     if (auto* ph = getPlayHead())
@@ -187,19 +187,9 @@ void PianoRoll1AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
         }
     }
     
-    //Update current beat position from host into PluginEditor to draw vertical play line.
-    //Not performed on every processBlock callback,
-    if(updateCounter==0){
-        //playPosition.setValue(lastPosInfo.ppqPosition);
-        //playPositionToSendPlayheadUpdate.setValue(lastPosInfo.ppqPosition);
-    }
-    //updateCounter = (updateCounter + 1) % (int)refreshCounter;
-    
-    
-    internalPlayPosition.setValue(lastPosInfo.ppqPosition);
-    
     //Add notes played on an external midi instrument into the sequencer when playing.
     if(lastPosInfo.isPlaying){
+        internalPlayPosition.setValue(lastPosInfo.ppqPosition);
         MidiBuffer::Iterator iterator(midiMessages);
         juce::MidiMessage incomingMessage;
         int incomingSamplePosition;
@@ -210,27 +200,13 @@ void PianoRoll1AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
                 midiInstrumentStream.add(std::make_pair(pitch, vol)); //Add to midi instrument stream.
             }
         }
+        
+        sequencerCheck(internalPlayPosition); //Sends current position to the sequencer to see if notes need to be played.
+        checkIfTooManyNotes(midiMessages);
+        midiStreamToMidiOutput(midiMessages);
     }
-    
-    
-    sequencerCheck(internalPlayPosition); //Sends current position to the sequencer to see if notes need to be played.
-
-    //Midi notes are put into a "midi stream" in the PluginEditor and extracted below to send out.
-    if(lastPosInfo.isPlaying){
-        
-        for(auto& [thisPitch, thisVol, active] : midiStream){
-            if(notesToIgnore.contains(thisPitch)){
-                notesToIgnore.removeAllInstancesOf(thisPitch);
-            }else{
-                midiMessages.addEvent(MidiMessage::noteOff(1, thisPitch), midiStart);
-                midiMessages.addEvent(MidiMessage::noteOn(1, thisPitch, static_cast<uint8>(thisVol)), midiStart);
-            }
-        }
-        midiStream.clearQuick();
-        
-    }else{ //Not playing
+    else //Not playing
         notesToIgnore.clearQuick();
-    }
 }
 
 //==============================================================================
@@ -280,7 +256,26 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new PianoRoll1AudioProcessor();
 }
 
+constexpr void PianoRoll1AudioProcessor::midiStreamToMidiOutput(juce::MidiBuffer &midiMessages){
+    const int midiStart = midiMessages.getFirstEventTime();
+    
+    for(auto& [thisPitch, thisVol, active] : midiStream){
+        if(notesToIgnore.contains(thisPitch))
+            notesToIgnore.removeAllInstancesOf(thisPitch);
+        else
+            midiMessages.addEvent(MidiMessage::noteOn(1, thisPitch, static_cast<uint8>(thisVol)), midiStart);
+        
+        activeNotes.add(thisPitch);
+    }
+    midiStream.clearQuick();
+}
 
+constexpr void PianoRoll1AudioProcessor::checkIfTooManyNotes(juce::MidiBuffer &midiMessages){
+    const int midiStart = midiMessages.getFirstEventTime();
+    
+    if (activeNotes.size()>maxNumOfActiveNotes)
+        midiMessages.addEvent(MidiMessage::noteOff(1, activeNotes.removeAndReturn(0)), midiStart);
+}
 
 void PianoRoll1AudioProcessor::prepToPlayNote(const int note, const int div){
     const int beatSwitch = divToBeatSwitch(div);
@@ -486,9 +481,8 @@ void PianoRoll1AudioProcessor::oscMessageReceived(const juce::OSCMessage &Messag
 
 void PianoRoll1AudioProcessor::resetAll(){
     presets.clear();
-    for(int preset=0;preset<=numOfPresets;preset++){
+    for(int preset=0;preset<=numOfPresets;preset++)
         presets.add(new Preset);
-    }
     currentPreset=1;
     currentTrack=1;
 }
@@ -502,7 +496,7 @@ void PianoRoll1AudioProcessor::octaveShift(int numOfOctaves){
             for(auto &note : thisTrack->sixteenthNotes) note.pitch+=(numOfOctaves*12);
             for(auto &note : thisTrack->tripletNotes)   note.pitch+=(numOfOctaves*12);
         }else{ //isPoly
-
+            //TODO
         }
     }
 }

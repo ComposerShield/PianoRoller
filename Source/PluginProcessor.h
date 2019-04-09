@@ -66,10 +66,6 @@ public:
     bool producesMidi() const override;
     bool isMidiEffect() const override;
     double getTailLengthSeconds() const override;
-
-    const int numOfPresets = PianoRollComponent::numOfPresets;
-    const int numOfTracks = PianoRollComponent::numOfTracks;
-    const int maxBeats = PianoRollComponent::maxBeats;
     
     //==============================================================================
     int getNumPrograms() override;
@@ -85,6 +81,9 @@ public:
     void updateCurrentTimeInfoFromHost();
     
     //==============================================================================
+    //==========================MY HUMBLE CONTRIBUTIONS=============================
+    //==============================================================================
+    
     int preset, numerator, denominator;
     AudioProcessorValueTreeState treeState;
     
@@ -96,19 +95,9 @@ public:
     Value playPosition;
     Value playPositionToSendPlayheadUpdate;
     Value internalPlayPosition;
-    Array<Note> midiStream;
-    Array<std::pair<int8, int8>> midiInstrumentStream;
-    Array<Atomic<int>> newMidiStream[12];
-    Array<int> notesToIgnore; //Just played on the midi controller. Avoid double play.
-    
-    void prepToPlayNote(const int note, const int div);
-    constexpr void playNote(int pitch, int volume);
     
     float currentBeat;
     float previousVal;
-    int sixteenthCounter;
-    int tripletCounter;
-    int beatIndex, sixteenth, triplet;
     void sequencerCheck(juce::Value &value);
     void resetAll();
     void rootChanged(const int root);
@@ -117,13 +106,28 @@ public:
     
     int root;
     Array<int> scale{0,2,4,5,7,9,11};
+    
+    constexpr void playNote(int pitch, int volume);
 
 private:
+    int beatIndex, sixteenth, triplet, maxNumOfActiveNotes{6},
+        sixteenthCounter, tripletCounter;
+    
+    Array<Note> midiStream;
+    Array<int> activeNotes;
+    Array<std::pair<int8, int8>> midiInstrumentStream;
+    Array<int> notesToIgnore; //Just played on the midi controller. Avoid double play.
+    
     void parameterChanged(const String& parameterID, float newValue) override;
     void oscMessageReceived(const OSCMessage &Message) override;
     
     constexpr void midiInputStreamToNoteArrays();
     constexpr void checkIfNoteGridPassed(const float valDecimals);
+    constexpr void midiStreamToMidiOutput(MidiBuffer& midiMessages);
+    constexpr void checkIfTooManyNotes(MidiBuffer& midiMessages);
+    void prepToPlayNote(const int note, const int div);
+    
+    
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll1AudioProcessor)

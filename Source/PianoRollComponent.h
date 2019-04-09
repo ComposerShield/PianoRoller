@@ -44,6 +44,7 @@ public:
     static inline int currentPreset = 1,
                       currentTrack  = 1;
     
+    static bool isChildOfBeatCanvas;
     bool isDoubleClick;
     
     struct PaintData;
@@ -134,19 +135,21 @@ public:
     void updateTrack(const int track);
     void noteOnOff(const int track, const int div, const int note, const int onOff);
     void copyPreset(const int presetSource, const int presetReplaced);
-    int midiLimit(const int midiVal);
     bool isMono();
-    constexpr Note& getMonoNote(const int col, const int beatSwitch);
-    constexpr PolyNote& getPolyNote(const int col, const int beatSwitch);
+    constexpr Note& getMonoNote(const int col, const int beatSwitch) const;
+    constexpr PolyNote& getPolyNote(const int col, const int beatSwitch) const;
     int divToBeatSwitch(int div);
     int beatSwitchToDiv(int beatSwitch);
     std::pair<bool, bool> getClicks(MouseEvent event, bool isDoubleClick);
     
-    constexpr int limitRange(const int val, const int low, const int high){
-        if(val>high) return high;
-        else if(val<low) return low;
-        else return val;
+    constexpr int limitRange(const int val, const int low, const int high) const{
+        return (val < 0 ? 0 : val) > 127 ? 127 : val;
     }
+    
+    constexpr int midiLimit(const int midiVal) const{
+        return limitRange(midiVal, 0, 127);
+    }
+    
     constexpr bool checkIfBlackKey(const int pitch) const{
         bool result = false;
         for(auto key : PianoRollComponent::blackKeys)
@@ -156,12 +159,12 @@ public:
     
     
     template<typename T>
-    constexpr bool inclusiveRange(T val, T lower, T upper){
+    constexpr bool inclusiveRange(T val, T lower, T upper) const{
         return (val >= lower && val <= upper);
     }
     
     template<typename T>
-    constexpr bool exclusiveRange(T val, T lower, T upper){
+    constexpr bool exclusiveRange(T val, T lower, T upper) const{
         return (val >= lower && val < upper);
     }
     

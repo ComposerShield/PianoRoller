@@ -21,7 +21,6 @@ PianoRoll::PianoRoll(Staff& auditionStaff, PianoKeys& pianoKeys) : pianoKeys(pia
 {
     topNote = 84;
     canScroll = true;
-    isChildOfBeatCanvas = false;
     isDoubleClick = false;
     setOpaque(true);
     
