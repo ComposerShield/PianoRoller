@@ -2005,6 +2005,7 @@
     <ClInclude Include="..\..\Source\VolumePanel.h"/>
     <ClInclude Include="..\..\Source\PianoRollComponent.h"/>
     <ClInclude Include="..\..\Source\MusicStaff.h"/>
+    <ClInclude Include="..\..\Source\OSC_Interpret.h"/>
     <ClInclude Include="..\..\Source\Theory.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h"/>

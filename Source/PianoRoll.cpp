@@ -56,7 +56,7 @@ void PianoRoll::paint (Graphics& g)
     drawRowLines(paintData);
 }
 
-constexpr void PianoRoll::drawRows(PaintData p){
+constexpr void PianoRoll::drawRows(PaintData p) const{
     
     for(int row=0;row<numOfRows;row++){
         const float yPosition = 0. + (row * p.height/numOfRows);
@@ -77,7 +77,7 @@ constexpr void PianoRoll::drawRows(PaintData p){
 
 }
 
-constexpr void PianoRoll::drawRowLines(PaintData p){
+constexpr void PianoRoll::drawRowLines(PaintData p) const{
     p.g.setColour (Colours::black);
     for(int i=0;i<=numOfRows;i++){
         const float yPosition = 0. + (i*p.height/static_cast<float>(numOfRows));

@@ -38,14 +38,13 @@ void VolumePanel::paint (Graphics& g)
     
     g.fillAll (PianoRollerColours::greyOff); //BACKGROUND COLOR
     
-    drawVolumes(paintData, isMono());
+    drawVolumes(paintData);
     
     g.drawLine(width, 0.0f, width, height, 3); //Right side line.
 }
 
-void VolumePanel::drawVolumes(PaintData p, bool mono){
+void VolumePanel::drawVolumes(PaintData p){
     auto thisTrack = presets[currentPreset]->tracks[currentTrack];
-    mono = presets[currentPreset]->isMono;
     
     for(int beat=0;beat<p.numOfBeats;beat++){
         const int currentBeatSwitch = thisTrack->beatSwitch[beat];
@@ -57,7 +56,7 @@ void VolumePanel::drawVolumes(PaintData p, bool mono){
         for(int subDiv=0;subDiv<div;subDiv++){
             const int col = (beat*div) + subDiv;
             auto& thisVol =
-                (mono) ? getMonoNote(col, currentBeatSwitch).vol
+                (isMono()) ? getMonoNote(col, currentBeatSwitch).vol
                        : getPolyNote(col, currentBeatSwitch).vol;
             
             Point<float> volSlider{col * thisNoteWidth,

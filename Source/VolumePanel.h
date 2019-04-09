@@ -30,7 +30,7 @@ public:
     
 private:
     
-    void drawVolumes (PaintData p, bool isMono);
+    void drawVolumes (PaintData p);
     
     
     

@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    Setup.h
+    PianoRollComponent.h
     Created: 2 Jan 2019 1:56:52pm
     Author:  Adam Shield
 
@@ -127,10 +127,10 @@ public:
     void updateNote(const int col, const int pitch, const int beatSwitch, const bool isActive);
     void setPitch(int track, int div, int note, int pitch, int preset);
     void updateVolume(const int col, const int vol, const int beatSwitch);
-    void updateBeatSwitch(int beat, int switchVal);
-    void updateNumOfBeats(int beats);
-    void updateNumOfBeats(int beats, const int preset);
-    void changeRhythmDiv(int track, int beat, int beatSwitch);
+    void updateBeatSwitch(const int beat, const int switchVal);
+    void updateNumOfBeats(const int beats);
+    void updateNumOfBeats(const int beats, const int preset);
+    void changeRhythmDiv(const int track, const int beat, const int beatSwitch);
     void updatePreset(const int preset);
     void updateTrack(const int track);
     void noteOnOff(const int track, const int div, const int note, const int onOff);
@@ -159,17 +159,17 @@ public:
     
     
     template<typename T>
-    constexpr bool inclusiveRange(T val, T lower, T upper) const{
+    constexpr bool inclusiveRange(const T val, const T lower, const T upper) const{
         return (val >= lower && val <= upper);
     }
     
     template<typename T>
-    constexpr bool exclusiveRange(T val, T lower, T upper) const{
+    constexpr bool exclusiveRange(const T val, const T lower, const T upper) const{
         return (val >= lower && val < upper);
     }
     
     //==================PAINTING FUNCTIONS==================
-    void drawColumnLine(PaintData p, const int subDiv, const int col, const float noteWidth);
+    void drawColumnLine(const PaintData p, const int subDiv, const int col, const float noteWidth) const;
     
     
     //================BEAT CANVAS OSC MESSAGES================

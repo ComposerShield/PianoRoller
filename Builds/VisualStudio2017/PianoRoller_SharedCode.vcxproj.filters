@@ -2511,6 +2511,9 @@
     <ClInclude Include="..\..\Source\MusicStaff.h">
       <Filter>PianoRoller\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\OSC_Interpret.h">
+      <Filter>PianoRoller\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Theory.h">
       <Filter>PianoRoller\Source</Filter>
     </ClInclude>

@@ -43,8 +43,8 @@ public:
     
 private:
     void paint (Graphics&) override;
-    constexpr void drawRows(PaintData p);
-    constexpr void drawRowLines(PaintData p);
+    constexpr void drawRows(PaintData p) const;
+    constexpr void drawRowLines(PaintData p) const;
     constexpr void monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth);
     constexpr void polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth);
     void drawNotes(PaintData p);

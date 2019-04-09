@@ -76,8 +76,8 @@ private:
     OpusLookAndFeel opusLookAndFeel;
     
     void paint(Graphics& g) override;
-    void drawClef(Graphics &g, const float width, const float height, const float clefHeight, const String clefText);
-    void drawStaffLines(Graphics& g, const int width, const int lineSpacing);
+    constexpr void drawClef(Graphics &g, const float width, const float height, const float clefHeight, const char clefText);
+    constexpr void drawStaffLines(Graphics& g, const int width, const int lineSpacing);
     void drawNotes(Graphics& g);
     
     void checkAccidental(Accidental& accidental, const Array<int> modeNotes, const Array<int> enharmIndex, const int pitchSetClass) const;

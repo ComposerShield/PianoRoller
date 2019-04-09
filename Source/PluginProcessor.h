@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PianoRollComponent.h"
+#include "OSC_Interpret.h"
 #define PRESET_ID "current_preset"
 #define PRESET_NAME "Current_Preset"
 #define TRACK_ID "current_track"
@@ -34,7 +35,8 @@ class PianoRoll1AudioProcessor  : public AudioProcessor,
                                   public PianoRollComponent,
                                   public AudioProcessorValueTreeState::Listener,
                                   public OSCReceiver,
-                                  public OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>
+                                  public OSCReceiver::ListenerWithOSCAddress<OSCReceiver::MessageLoopCallback>//,
+                                //public OSC_Interpreter
 {
 public:
     //==============================================================================
@@ -113,6 +115,7 @@ private:
     int beatIndex, sixteenth, triplet, maxNumOfActiveNotes{6},
         sixteenthCounter, tripletCounter;
     
+    OSC_Interpreter osc_Interpreter;
     Array<Note> midiStream;
     Array<int> activeNotes;
     Array<std::pair<int8, int8>> midiInstrumentStream;

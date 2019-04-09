@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    Setup.cpp
+    PianoRollComponent.cpp
     Created: 3 Jan 2019 6:19:18pm
     Author:  Adam Shield
 
@@ -62,19 +62,19 @@ void PianoRollComponent::updateVolume(const int col, const int vol, const int be
     thisVol = vol;
 }
 
-void PianoRollComponent::updateBeatSwitch(int beat, int switchVal){
+void PianoRollComponent::updateBeatSwitch(const int beat, const int switchVal){
     presets[currentPreset]->tracks[currentTrack]->beatSwitch.set(beat,switchVal);
 }
 
-void PianoRollComponent::updateNumOfBeats(int beats){
+void PianoRollComponent::updateNumOfBeats(const int beats){
     updateNumOfBeats(beats, currentPreset);
 }
 
-void PianoRollComponent::updateNumOfBeats(int beats, const int preset){
+void PianoRollComponent::updateNumOfBeats(const int beats, const int preset){
     presets[currentPreset]->numOfBeats = beats;
 }
 
-void PianoRollComponent::changeRhythmDiv(int track, int beat, int beatSwitch){
+void PianoRollComponent::changeRhythmDiv(const int track, const int beat, const int beatSwitch){
     presets[currentPreset]->tracks[track]->beatSwitch.set(beat, beatSwitch);
 }
 
@@ -103,7 +103,7 @@ void PianoRollComponent::setPitch(const int track, const int div, const int note
     thisPitch = pitch;
 }
 
-void PianoRollComponent::drawColumnLine(PaintData p, const int subDiv, const int col, const float noteWidth){
+void PianoRollComponent::drawColumnLine(const PaintData p, const int subDiv, const int col, const float noteWidth) const{
     const int lineWidth = (subDiv==0) ? 3 : 1;
     const float xPosition = 0.0f + ( static_cast<float>(col)*noteWidth );
     

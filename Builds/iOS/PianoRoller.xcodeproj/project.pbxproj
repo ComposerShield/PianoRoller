@@ -290,6 +290,13 @@
 			path = "../../JuceLibraryCode/include_juce_gui_extra.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		244514F7BA3C95CDD6CF5C30 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = "OSC_Interpret.h";
+			path = "../../Source/OSC_Interpret.h";
+			sourceTree = "SOURCE_ROOT";
+		};
 		27DD4489554A02B086D1D292 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -729,6 +736,7 @@
 				993D143DACDC1A82C5768180,
 				93BCA943E045965A0E7C592F,
 				9E9BD33AE19A3DDAFAA0567C,
+				244514F7BA3C95CDD6CF5C30,
 				8147812741DD35D4D6256D05,
 			);
 			name = Source;

@@ -32,6 +32,7 @@
             file="Source/PianoRollComponent.h"/>
       <FILE id="HHcR2d" name="MusicStaff.cpp" compile="1" resource="0" file="Source/MusicStaff.cpp"/>
       <FILE id="WWW1Ow" name="MusicStaff.h" compile="0" resource="0" file="Source/MusicStaff.h"/>
+      <FILE id="pA4LV1" name="OSC_Interpret.h" compile="0" resource="0" file="Source/OSC_Interpret.h"/>
       <FILE id="wJhAgm" name="Theory.h" compile="0" resource="0" file="Source/Theory.h"/>
     </GROUP>
   </MAINGROUP>

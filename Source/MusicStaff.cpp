@@ -32,7 +32,7 @@ void Staff::paint(juce::Graphics &g){
     }();
     const float noteHeight = height*0.1;
     const float noteWidth = noteHeight*1.5f;
-    const String clefText = [&]()->String{
+    const char* clefText = [&](){
         if (isTreble) return "&";
         else return "?";
         
@@ -50,7 +50,7 @@ void Staff::paint(juce::Graphics &g){
     Theory::Mode mode = Theory::modeMap.at(modeName);
     auto [modeNotes, enharmIndex, intervals] = mode;
     
-    drawClef(g, width, height, clefHeight, clefText);
+    drawClef(g, width, height, clefHeight, *clefText);
     
     drawStaffLines(g, width, lineSpacing);
     
@@ -71,23 +71,23 @@ void Staff::paint(juce::Graphics &g){
         
         const auto [lowestCinStaffLineOffset, lowestCinStaffOctave] = [&](){
             switch(clef){
-                case TREBLE: return std::pair<int, int>(3, 4);
-                case BASS: return std::pair<int, int>(1, 2);
+                case TREBLE:     return std::pair<int, int>(3, 4);
+                case BASS:       return std::pair<int, int>(1, 2);
                 case TREBLE_8VA: return std::pair<int, int>(3, 5);
-                case TREBLE_15MA: return std::pair<int, int>(3, 6);
-                case BASS_8VA: return std::pair<int, int>(1, 1);
-                case BASS_15MA: return std::pair<int, int>(1, 0);
+                case TREBLE_15MA:return std::pair<int, int>(3, 6);
+                case BASS_8VA:   return std::pair<int, int>(1, 1);
+                case BASS_15MA:  return std::pair<int, int>(1, 0);
             }
         }();
         
-        const String accidentalText = [&, accidental=accidental](){
+        const char* accidentalText = [&, accidental=accidental](){
             switch(accidental){
                 case SHARP: return "#";
                 case FLAT: return "b";
                 case DOUBLE_SHARP: return "x";
                 case DOUBLE_FLAT: return "bb";
                 case NATURAL: return "";
-                case COURTESY_NATURAL: DBG("dsgdfgsfh\negfergre\nsasd"); return "n";
+                case COURTESY_NATURAL: return "n";
                 case NO_PREFERENCE: jassertfalse;
             }
             return "";
@@ -104,13 +104,13 @@ void Staff::paint(juce::Graphics &g){
     }
 }
 
-void Staff::drawClef(Graphics &g, const float width, const float height, const float clefHeight, const String clefText){
+constexpr void Staff::drawClef(Graphics &g, const float width, const float height, const float clefHeight, const char clefText){
     g.setFont(opusLookAndFeel.getOpus());
     g.setFont(height*0.76);
-    g.drawText(clefText, 0.0f, clefHeight, width, height, Justification::left);
+    g.drawText(static_cast<String>(clefText), 0.0f, clefHeight, width, height, Justification::left);
 }
 
-void Staff::drawStaffLines(Graphics &g, const int width, const int lineSpacing){
+constexpr void Staff::drawStaffLines(Graphics &g, const int width, const int lineSpacing){
     g.setColour(Colours::black);
     for(int line=4; line<9;line++){
         float yPos = line*lineSpacing;
