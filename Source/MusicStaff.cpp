@@ -123,7 +123,7 @@ void Staff::drawNotes(Graphics &g){
     
 }
 
-void Staff::checkAccidental(Accidental& accidental, const Array<int> modeNotes, const Array<int> enharmIndex, const int pitchSetClass){
+void Staff::checkAccidental(Accidental& accidental, const Array<int> modeNotes, const Array<int> enharmIndex, const int pitchSetClass) const{
     
     if (accidental == NO_PREFERENCE){
         

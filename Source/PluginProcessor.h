@@ -102,7 +102,7 @@ public:
     Array<int> notesToIgnore; //Just played on the midi controller. Avoid double play.
     
     void prepToPlayNote(const int note, const int div);
-    void playNote(int pitch, int volume);
+    constexpr void playNote(int pitch, int volume);
     
     float currentBeat;
     float previousVal;
@@ -111,20 +111,19 @@ public:
     int beatIndex, sixteenth, triplet;
     void sequencerCheck(juce::Value &value);
     void resetAll();
-    void rootChanged(const int root); //TODO
-    void scaleChanged(const String scaleName); //TODO
+    void rootChanged(const int root);
+    void scaleChanged(const String scaleName);
     void octaveShift(int numOfOctaves);
     
     int root;
     Array<int> scale{0,2,4,5,7,9,11};
 
 private:
-    //AudioParameterFloat* playCursor;
     void parameterChanged(const String& parameterID, float newValue) override;
     void oscMessageReceived(const OSCMessage &Message) override;
     
-    void midiInputStreamToNoteArrays();
-    void checkIfNoteGridPassed(const float valDecimals);
+    constexpr void midiInputStreamToNoteArrays();
+    constexpr void checkIfNoteGridPassed(const float valDecimals);
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll1AudioProcessor)

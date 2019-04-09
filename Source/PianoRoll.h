@@ -43,13 +43,13 @@ public:
     
 private:
     void paint (Graphics&) override;
-    void drawRows(PaintData p);
-    void drawRowLines(PaintData p);
-    void monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth);
-    void polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth);
+    constexpr void drawRows(PaintData p);
+    constexpr void drawRowLines(PaintData p);
+    constexpr void monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth);
+    constexpr void polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth);
     void drawNotes(PaintData p);
-    void monoWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event);
-    void polyWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event);
+    constexpr void monoWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event);
+    constexpr void polyWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event);
     
     void mouseEnter(const MouseEvent& event) override;
     void mouseExit(const MouseEvent& event) override;
@@ -67,7 +67,7 @@ private:
     bool isChildOfBeatCanvas;
     PianoKeys& pianoKeys;
     Staff& auditionStaff;
-    Clef clefDisplay(int pitch);
+    constexpr Clef clefDisplay(int pitch);
     
     int prevPitch;
     

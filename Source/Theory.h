@@ -68,7 +68,7 @@ namespace Theory{
         }
     };
     
-    const int blackKeys[5] = {1,3,6,8,10};
+    constexpr int blackKeys[5] = {1,3,6,8,10};
     
     /*
      * Scales are built using Arrays of
@@ -284,7 +284,7 @@ namespace Theory{
         {11,6}
     };
     
-    inline std::pair<int,int> noteNameToDiatonicValue(String noteName){
+    inline std::pair<int,int> noteNameToDiatonicValue(String noteName) {
         int diatonicNoteVal;
         int diatonicModVal;
         
@@ -300,7 +300,7 @@ namespace Theory{
         return {diatonicNoteVal, diatonicModVal};
     }
     
-    inline Accidental diatonicMatrixToAccidentals(int val){
+    constexpr Accidental diatonicMatrixToAccidentals(int val){
         switch(val){
             case -1: return NO_PREFERENCE;
             case 0 : return DOUBLE_FLAT;
@@ -308,7 +308,7 @@ namespace Theory{
             case 2 : return NATURAL;
             case 3 : return SHARP;
             case 4 : return DOUBLE_SHARP;
-            default: DBG("Unrecognized Accidental"); return NATURAL;
+            default: return NATURAL;
         }
     }
     

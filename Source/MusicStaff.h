@@ -80,5 +80,5 @@ private:
     void drawStaffLines(Graphics& g, const int width, const int lineSpacing);
     void drawNotes(Graphics& g);
     
-    void checkAccidental(Accidental& accidental, const Array<int> modeNotes, const Array<int> enharmIndex, const int pitchSetClass);
+    void checkAccidental(Accidental& accidental, const Array<int> modeNotes, const Array<int> enharmIndex, const int pitchSetClass) const;
 };

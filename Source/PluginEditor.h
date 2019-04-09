@@ -57,11 +57,8 @@ public:
     
     void setMidiDisplay(int midi);
     void updatePreset(int preset);
-    void updateNoteName(const String newNoteName);
-    void prepToPlayNote(int note, int div);
-    float dbToVolume(const float db);
-    float volumeToDB(const float vol);
-    void playNote(const int pitch, const int volume);
+    constexpr void prepToPlayNote(int note, int div);
+    constexpr void playNote(const int pitch, const int volume);
     
     bool keyPressed(const juce::KeyPress &key, juce::Component *originatingComponent) override;
     void sliderValueChanged(Slider* slider) override;
@@ -113,13 +110,10 @@ private:
     Value noteName;
     float currentBeat;
     float previousVal;
-    const bool pianoKeyPanel = true;
-    const float sliderSpacing = 0.25f;
-    const static int numOfPresets = PianoRollComponent::numOfPresets;
-    const static int numOfTracks = PianoRollComponent::numOfTracks;
-    const static int maxBeats = PianoRollComponent::maxBeats;
-    const float topBorder = 0.14f;
-    const float pianoKeyWidth = 0.06;
+    static constexpr bool pianoKeyPanel = true;
+    static constexpr float sliderSpacing = 0.25f;
+    static constexpr float topBorder = 0.14f;
+    static constexpr float pianoKeyWidth = 0.06;
     Array<Array<float>> tripletSwitches;
     Array<int> beatsClicked;
     String arpeggioDirection;
@@ -141,10 +135,4 @@ private:
     // access the processor object that created it.
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoRoll1AudioProcessorEditor)
-};
-
-struct SliderWithAttachment
-{
-    ScopedPointer <Slider> slider;
-    ScopedPointer <juce::AudioProcessorValueTreeState::SliderAttachment> attachment;
 };

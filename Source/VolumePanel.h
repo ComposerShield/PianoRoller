@@ -23,16 +23,14 @@ public:
     ~VolumePanel();
     
     void paint (Graphics&) override;
-    void drawVolumes (PaintData p, bool isMono);
     void resized() override;
-
     void mouseDown(const MouseEvent& event) override;
     void mouseDrag (const MouseEvent& event) override;
 
     
 private:
     
-    
+    void drawVolumes (PaintData p, bool isMono);
     
     
     

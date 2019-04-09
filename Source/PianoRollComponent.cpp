@@ -17,19 +17,19 @@ OwnedArray<PianoRollComponent::Preset> PianoRollComponent::presets = []()->Owned
     return output;
 }();
 
-Note& PianoRollComponent::getMonoNote(int col, int beatSwitch){
+constexpr Note& PianoRollComponent::getMonoNote(const int col, const int beatSwitch){
     switch(beatSwitch){
         case 0: return presets[currentPreset]->tracks[currentTrack]->sixteenthNotes.getReference(col); break;
         case 1: return presets[currentPreset]->tracks[currentTrack]->tripletNotes.getReference(col); break;
-        default: jassertfalse; return getMonoNote(0, 0);
+        default: return getMonoNote(0, 0);
     }
 }
 
-PolyNote& PianoRollComponent::getPolyNote(int col, int beatSwitch){
+constexpr PolyNote& PianoRollComponent::getPolyNote(const int col, const int beatSwitch){
     switch(beatSwitch){
         case 0: return {presets[currentPreset]->tracks[currentTrack]->polySixteenths.getReference(col)}; break;
         case 1: return {presets[currentPreset]->tracks[currentTrack]->polyTriplets.getReference(col)}; break;
-        default : jassertfalse; return getPolyNote(0, 0);
+        default : return getPolyNote(0, 0);
     }
 }
 
@@ -69,7 +69,6 @@ void PianoRollComponent::updateNumOfBeats(int beats){
 }
 
 void PianoRollComponent::updateNumOfBeats(int beats, const int preset){
-    jassert(inclusiveRange(beats, 1, maxBeats));
     presets[currentPreset]->numOfBeats = beats;
 }
 
@@ -81,24 +80,8 @@ void PianoRollComponent::updatePreset(const int preset){
     currentPreset = preset;
 }
 
-int PianoRollComponent::midiLimit(int midiVal){
-    if(midiVal>127){midiVal=127;}
-    else if(midiVal<0){midiVal=0;}
-    return midiVal;
-}
-
-int PianoRollComponent::limitRange(int val, int low, int high){
-    if(val>high){val=high;}
-    else if(val<low){val=low;}
-    return val;
-}
-
-bool PianoRollComponent::checkIfBlackKey(const int pitch){
-    bool result = false;
-    for(auto key : PianoRollComponent::blackKeys){
-        if(pitch%12 == key) result = true;
-    }
-    return result;
+int PianoRollComponent::midiLimit(const int midiVal){
+    return (midiVal < 0 ? 0 : midiVal) > 127 ? 127 : midiVal;
 }
 
 void PianoRollComponent::updateTrack(const int track){

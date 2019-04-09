@@ -98,6 +98,7 @@ public:
             numOfBeats = 4;
             isMono = true;
             currentModeNotes = {0,2,4,5,7,9,11}; //Major Scale
+            currentModeNotes.ensureStorageAllocated(12);
             rootName = "C";
             currentMode = "Major";
             generatorType = "random";
@@ -133,15 +134,26 @@ public:
     void updateTrack(const int track);
     void noteOnOff(const int track, const int div, const int note, const int onOff);
     void copyPreset(const int presetSource, const int presetReplaced);
-    int midiLimit(int midiVal);
-    int limitRange(int val, int low, int high);
-    bool checkIfBlackKey(const int pitch);
+    int midiLimit(const int midiVal);
     bool isMono();
-    Note& getMonoNote(int col, int beatSwitch);
-    PolyNote& getPolyNote(int col, int beatSwitch);
+    constexpr Note& getMonoNote(const int col, const int beatSwitch);
+    constexpr PolyNote& getPolyNote(const int col, const int beatSwitch);
     int divToBeatSwitch(int div);
     int beatSwitchToDiv(int beatSwitch);
     std::pair<bool, bool> getClicks(MouseEvent event, bool isDoubleClick);
+    
+    constexpr int limitRange(const int val, const int low, const int high){
+        if(val>high) return high;
+        else if(val<low) return low;
+        else return val;
+    }
+    constexpr bool checkIfBlackKey(const int pitch) const{
+        bool result = false;
+        for(auto key : PianoRollComponent::blackKeys)
+            if(pitch%12 == key) result = true;
+        return result;
+    }
+    
     
     template<typename T>
     constexpr bool inclusiveRange(T val, T lower, T upper){

@@ -329,15 +329,7 @@ void PianoRoll1AudioProcessorEditor::setMidiDisplay(int midi){
     midiLabel.setName((String) midi);
 }
 
-float PianoRoll1AudioProcessorEditor::dbToVolume(const float db){
-    return powf(10.0f, 0.05f * db);
-}
-
-float PianoRoll1AudioProcessorEditor::volumeToDB(const float vol){
-    return 20.0f * log10f(vol);
-}
-
-void PianoRoll1AudioProcessorEditor::playNote(const int pitch, const int volume){
+constexpr void PianoRoll1AudioProcessorEditor::playNote(const int pitch, const int volume){
     processor.playNote(pitch, volume);
 }
 
@@ -473,7 +465,7 @@ void PianoRoll1AudioProcessorEditor::valueChanged(juce::Value &value){
 }
 
 
-void PianoRoll1AudioProcessorEditor::prepToPlayNote(const int note, const int div){
+constexpr void PianoRoll1AudioProcessorEditor::prepToPlayNote(const int note, const int div){
     int beatSwitch = divToBeatSwitch(div);
     auto& [thisPitch, thisVol, active] = getMonoNote(note, beatSwitch);
     

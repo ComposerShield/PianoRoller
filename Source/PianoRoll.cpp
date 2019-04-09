@@ -57,7 +57,7 @@ void PianoRoll::paint (Graphics& g)
     drawRowLines(paintData);
 }
 
-void PianoRoll::drawRows(PaintData p){
+constexpr void PianoRoll::drawRows(PaintData p){
     
     for(int row=0;row<numOfRows;row++){
         const float yPosition = 0. + (row * p.height/numOfRows);
@@ -78,7 +78,7 @@ void PianoRoll::drawRows(PaintData p){
 
 }
 
-void PianoRoll::drawRowLines(PaintData p){
+constexpr void PianoRoll::drawRowLines(PaintData p){
     p.g.setColour (Colours::black);
     for(int i=0;i<=numOfRows;i++){
         const float yPosition = 0. + (i*p.height/static_cast<float>(numOfRows));
@@ -114,7 +114,7 @@ void PianoRoll::drawNotes(PaintData p){
     }
 }
 
-void PianoRoll::monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
+constexpr void PianoRoll::monoNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
     auto& [pitch, vol, active] = getMonoNote(col, beatSwitch);
     if(active){ //If note is active.
         p.g.setColour (PianoRollerColours::whiteBlue);
@@ -124,7 +124,7 @@ void PianoRoll::monoNoteFill(PaintData p, const int col, const int beatSwitch, c
     }
 }
 
-void PianoRoll::polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
+constexpr void PianoRoll::polyNoteFill(PaintData p, const int col, const int beatSwitch, const float thisNoteWidth){
     //TODO******
     auto& [pitches, vol] = getPolyNote(col, beatSwitch);
     
@@ -209,14 +209,13 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     repaint();
 }
 
-void PianoRoll::monoWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event){
+constexpr void PianoRoll::monoWriteNote(const int thisCol, const int pitch, const int beatSwitch, const MouseEvent& event){
     const auto [leftClick, rightClick] = getClicks(event, isDoubleClick);
     const int beatDiv = beatSwitchToDiv(beatSwitch);
 
     if(!rightClick){
         updateNote(thisCol, pitch, beatSwitch);
-        String newNoteName = Theory::setClassToPitchName[pitch%12];
-        noteName->setValue(newNoteName);
+        noteName->setValue(Theory::setClassToPitchName[pitch%12]);
         *midiNoteNum = pitch;
         
         //========Send to BeatCanvasJava.Java=======
@@ -237,7 +236,7 @@ void PianoRoll::monoWriteNote(const int thisCol, const int pitch, const int beat
     }
 }
 
-void PianoRoll::polyWriteNote(const int thisCol, const int pitch,
+constexpr void PianoRoll::polyWriteNote(const int thisCol, const int pitch,
                               const int beatSwitch, const MouseEvent& event){
     const auto [leftClick, rightClick] = getClicks(event, isDoubleClick);
     const bool isDragging = event.mouseWasDraggedSinceMouseDown();
@@ -254,8 +253,7 @@ void PianoRoll::polyWriteNote(const int thisCol, const int pitch,
     }else{ //rightClick
         updateNote(thisCol, pitch, beatSwitch, false);
     }
-    String newNoteName = Theory::setClassToPitchName[pitch%12];
-    noteName->setValue(newNoteName);
+    noteName->setValue(Theory::setClassToPitchName[pitch%12]);
 }
 
 void PianoRoll::spacebar(){
@@ -280,7 +278,7 @@ void PianoRoll::changeBeatCanvasTriplet(const int beat, const int val){
     BeatCanvasOSC_MessageOut("/BeatCanvas/changeRhythmDiv", currentTrack, beat, val);
 }
 
-Clef PianoRoll::clefDisplay(int pitch){
+constexpr Clef PianoRoll::clefDisplay(int pitch){
     if      (inclusiveRange(pitch, 60, 84)) return TREBLE;
     else if (inclusiveRange(pitch, 85, 96)) return TREBLE_8VA;
     else if (inclusiveRange(pitch, 85, 127)) return TREBLE_15MA;

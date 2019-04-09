@@ -297,7 +297,7 @@ void PianoRoll1AudioProcessor::prepToPlayNote(const int note, const int div){
 }
 
 
-void PianoRoll1AudioProcessor::playNote(int pitch, int volume){
+constexpr void PianoRoll1AudioProcessor::playNote(int pitch, int volume){
     midiStream.add(Note{pitch, volume, true});
 }
 
@@ -333,7 +333,7 @@ void PianoRoll1AudioProcessor::sequencerCheck(juce::Value &value){
 }
 
 
-void PianoRoll1AudioProcessor::midiInputStreamToNoteArrays(){
+constexpr void PianoRoll1AudioProcessor::midiInputStreamToNoteArrays(){
     //THIS CODE IS CALLED WHEN THE USER IS PLAYING A MIDI INSTRUMENT.
     //Move incoming midi instrument stream into the actual sequencer. Performed notes are thus saved.
     while(midiInstrumentStream.size()>0){
@@ -341,7 +341,6 @@ void PianoRoll1AudioProcessor::midiInputStreamToNoteArrays(){
         int div = beatSwitchToDiv(beatSwitch);
         uint8 pitch = midiInstrumentStream[0].first;
         uint8 vol = midiInstrumentStream[0].second;
-        Array<int>newPitchArray;
         float val = currentBeat * static_cast<float>(div);
         int roundedVal = ( static_cast<int>(std::round(val)) ) % (presets[currentPreset]->numOfBeats*div);
         
@@ -361,7 +360,7 @@ void PianoRoll1AudioProcessor::midiInputStreamToNoteArrays(){
     }
 }
 
-void PianoRoll1AudioProcessor::checkIfNoteGridPassed(const float valDecimals){
+constexpr void PianoRoll1AudioProcessor::checkIfNoteGridPassed(const float valDecimals){
     if(valDecimals >= 0.0f && valDecimals < 0.25f && sixteenthCounter == 3){
         sixteenthCounter = 0;
         sixteenth = beatIndex*4;
