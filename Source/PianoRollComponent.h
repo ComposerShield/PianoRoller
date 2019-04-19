@@ -40,12 +40,14 @@ public:
     static constexpr int maxBeats = 16;
     static constexpr int numOfRows = 32;
     static constexpr int blackKeys[5] = {1,3,6,8,10};
+    inline static const bool isStandalone = JUCEApplication::isStandaloneApp();
+    inline static const bool isPlugin = !JUCEApplication::isStandaloneApp();
     
-    static inline int currentPreset = 1,
+    inline static int currentPreset = 1,
                       currentTrack  = 1;
     
     static bool isChildOfBeatCanvas;
-    bool isDoubleClick;
+    static bool isDoubleClick;
     
     struct PaintData;
     
@@ -118,8 +120,7 @@ public:
     
     ////==============CONSTRUCTOR==============//
     PianoRollComponent(){
-        currentPreset = 1;
-        currentTrack = 1;
+
         
     }
     
@@ -135,12 +136,12 @@ public:
     void updateTrack(const int track);
     void noteOnOff(const int track, const int div, const int note, const int onOff);
     void copyPreset(const int presetSource, const int presetReplaced);
-    bool isMono();
+    bool isMono() const;
     constexpr Note& getMonoNote(const int col, const int beatSwitch) const;
     constexpr PolyNote& getPolyNote(const int col, const int beatSwitch) const;
-    int divToBeatSwitch(int div);
-    int beatSwitchToDiv(int beatSwitch);
-    std::pair<bool, bool> getClicks(MouseEvent event, bool isDoubleClick);
+    int divToBeatSwitch(int div) const;
+    int beatSwitchToDiv(int beatSwitch) const;
+    std::pair<bool, bool> getClicks(MouseEvent event, bool isDoubleClick) const;
     
     constexpr int limitRange(const int val, const int low, const int high) const{
         return (val < 0 ? 0 : val) > 127 ? 127 : val;
@@ -151,10 +152,9 @@ public:
     }
     
     constexpr bool checkIfBlackKey(const int pitch) const{
-        bool result = false;
         for(auto key : PianoRollComponent::blackKeys)
-            if(pitch%12 == key) result = true;
-        return result;
+            if(pitch%12 == key) return true;
+        return false;
     }
     
     
@@ -186,7 +186,7 @@ public:
     
     OSCSender sender;
     
-    void showConnectionErrorMessage (const String& messageText)
+    void showConnectionErrorMessage (const String& messageText) const
     {
         AlertWindow::showMessageBoxAsync (AlertWindow::WarningIcon,
                                           "Connection error",

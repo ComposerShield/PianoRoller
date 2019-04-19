@@ -13,7 +13,7 @@
 
 class OSC_Interpreter : public PianoRollComponent{
 public:
-    inline void OSC_Interpret(const juce::OSCMessage &Message){
+    inline constexpr void OSC_Interpret(const juce::OSCMessage &Message){
         //"Function" calls.
         if (Message.size() > 0 && Message[0].isString()){
             
@@ -45,10 +45,10 @@ public:
             
             else if(Message[0].getString() == "updateNumOfBeats"){
                 int beats = Message[1].getInt32();
-                int preset;
-                if (Message.size() == 3){preset = Message[2].getInt32();}
-                else{preset = currentPreset;}
-                //parameterChanged(BEATS_ID, beats);
+                int preset = [&](){
+                    return (Message.size() == 3) ? Message[2].getInt32() : currentPreset;
+                }();
+                updateNumOfBeats(beats, preset);
             }
             
             

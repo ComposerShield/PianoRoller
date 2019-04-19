@@ -90,7 +90,7 @@ constexpr void PianoRoll::drawRowLines(PaintData p) const{
     p.g.drawLine(p.width, 0.0f, p.width, p.height, 3); //Right side line.
 }
 
-void PianoRoll::drawNotes(PaintData p){
+void PianoRoll::drawNotes(PaintData p) const{
     auto thisTrack = presets[currentPreset]->tracks[currentTrack];
     for(int beat=0;beat<p.numOfBeats;beat++){
         const int beatSwitch = thisTrack->beatSwitch[beat];
@@ -203,7 +203,6 @@ void PianoRoll::mouseDown(const MouseEvent& event){
     auditionStaff.clef = clefDisplay(pitch);
     pianoKeys.selectedKey = (getClicks(event, isDoubleClick).second) ? 0 : pitch;
     
-    isDoubleClick=false;
     pianoKeys.repaint();
     repaint();
 }
@@ -277,7 +276,7 @@ void PianoRoll::changeBeatCanvasTriplet(const int beat, const int val){
     BeatCanvasOSC_MessageOut("/BeatCanvas/changeRhythmDiv", currentTrack, beat, val);
 }
 
-constexpr Clef PianoRoll::clefDisplay(int pitch){
+constexpr Clef PianoRoll::clefDisplay(int pitch) const{
     if      (inclusiveRange(pitch, 60, 84)) return TREBLE;
     else if (inclusiveRange(pitch, 85, 96)) return TREBLE_8VA;
     else if (inclusiveRange(pitch, 85, 127)) return TREBLE_15MA;
@@ -314,29 +313,37 @@ void PianoKeys::paint(juce::Graphics &g){
     
 }
 
-void PianoKeys::drawRows(PaintData p){
-    for(int row=0; row<numOfRows; row++){
-        const int pitch = p.topNote-row;
-        const float yPosition = row * p.noteHeight;
-        const bool isSelectedKey = selectedKey==pitch;
-        
-        if (checkIfBlackKey(pitch)){
-            p.g.setColour ( (isSelectedKey) ? PianoRollerColours::whiteBlue : Colours::darkgrey );
-            p.g.fillRect(0.0f,yPosition,p.width*0.666, p.noteHeight);
-            p.g.setColour (Colours::black);
-            p.g.drawRect(0.0f,yPosition,p.width*0.66, p.noteHeight);
+void PianoKeys::drawRows(const PaintData p) const{
+    for(auto keyColour : {WHITE, BLACK}){
+        for(int row=0; row<numOfRows; row++){
+            const int pitch = p.topNote-row;
+            const float yPosition = row * p.noteHeight;
+            const bool isSelectedKey = selectedKey==pitch;
             
-        }else{ //is a White Key
-            p.g.setColour ((isSelectedKey) ? PianoRollerColours::whiteBlue : PianoRollerColours::beatCanvasJungleGreen );
-            p.g.fillRect(0.0f,yPosition,p.width, p.noteHeight);
-            
-            p.g.setColour (Colours::black);
-            if(pitch%12==4 || pitch%12==11){ //Note E or B
-                p.g.drawLine(0.0f, yPosition, p.width, yPosition);
-            }else{
-                p.g.drawLine(p.width*0.66f, yPosition-(p.noteHeight*0.5f), p.width-0.66f, yPosition-(p.noteHeight*0.5f));
+            if (checkIfBlackKey(pitch) && keyColour==BLACK){ //We are drawing black keys last.
+                p.g.setColour ( (isSelectedKey) ? PianoRollerColours::whiteBlue : Colours::darkgrey );
+                p.g.fillRect(0.0f,yPosition,p.width*0.666, p.noteHeight);
+                p.g.setColour (Colours::black);
+                p.g.drawRect(0.0f,yPosition,p.width*0.66, p.noteHeight);
+                
+            }else if (!checkIfBlackKey(pitch) && keyColour==WHITE){ //is a White Key
+                p.g.setColour ((isSelectedKey) ? PianoRollerColours::whiteBlue : PianoRollerColours::beatCanvasJungleGreen );
+                
+                if(pitch%12==4 || pitch%12==11) p.g.fillRect(0.0f, yPosition,p.width, p.noteHeight*1.45);
+                else                            p.g.fillRect(0.0f, yPosition-(p.noteHeight/2) ,p.width, p.noteHeight*2);
+                
+                drawMiddleOfBlackKeyLine(p, pitch, yPosition);
             }
         }
+    }
+}
+
+void PianoKeys::drawMiddleOfBlackKeyLine(const PaintData p, const int pitch, const float yPosition) const{
+    p.g.setColour (Colours::black);
+    if(pitch%12==4 || pitch%12==11){ //Note E or B
+        p.g.drawLine(0.0f, yPosition, p.width, yPosition);
+    }else{
+        p.g.drawLine(p.width*0.66f, yPosition-(p.noteHeight*0.5f), p.width-0.66f, yPosition-(p.noteHeight*0.5f));
     }
 }
 

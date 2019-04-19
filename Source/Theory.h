@@ -37,6 +37,11 @@ enum Accidental{
     COURTESY_NATURAL
 };
 
+enum KeyColour{
+    WHITE,
+    BLACK
+};
+
 namespace Theory{
     
     struct Mode{
@@ -103,8 +108,6 @@ namespace Theory{
                             hungarMinor= { {0,2,3,6,7,8,11},    {0,0,-1,1,0,-1,0},      {1,2,3,4,5,6,7} },
                             bebopDom =   { {0,2,4,5,7,9,10,11}, {0,0,0,0,0,0,-1,0},     {1,2,3,4,5,6,7,7} },
                             bebopMaj =   { {0,2,4,5,7,8,9,11},  {0,0,0,0,0,1,0,0},      {1,2,3,4,5,5,6,7} };
-        
-         
         
     };
     
@@ -234,7 +237,7 @@ namespace Theory{
         {"Farben (Chord)", Chords::farben}
          
 
-    }; //TODO, change everything to scales
+    };
 
     
     const std::map<int, Array<String>> diatonicNoteNames = {
@@ -319,6 +322,19 @@ namespace Theory{
         DBG("Major is at numer " + (String)scaleList.indexOf("Major"));
         return scaleList.indexOf("Major");
     }();
+    
+    inline String getAccidentalText(Accidental accidental){
+        switch(accidental){
+            case SHARP: return "#";
+            case FLAT: return "b";
+            case DOUBLE_SHARP: return "x";
+            case DOUBLE_FLAT: return "bb";
+            case NATURAL: return "";
+            case COURTESY_NATURAL: return "n";
+            case NO_PREFERENCE: jassertfalse;
+        }
+        return "";
+    };
 };
 
 

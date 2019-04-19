@@ -3,7 +3,7 @@
 <JUCERPROJECT name="PianoRoller" projectType="audioplug" buildStandalone="1"
               jucerVersion="5.4.1" pluginFormats="buildAU,buildStandalone,buildVST,buildVST3"
               buildVST="1" buildVST3="1" buildAU="1" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" enableIAA="0" cppLanguageStandard="17" pluginCharacteristicsValue="pluginProducesMidiOut,pluginWantsMidiIn"
+              buildAAX="0" enableIAA="0" cppLanguageStandard="latest" pluginCharacteristicsValue="pluginProducesMidiOut,pluginWantsMidiIn"
               id="BgPZPy" pluginVST3Category="Fx" pluginVSTCategory="kPlugCategSynth"
               pluginAUMainType="'aumi'">
   <MAINGROUP id="ynztv4" name="PianoRoller">

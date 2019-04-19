@@ -88,8 +88,10 @@ PianoRoll1AudioProcessorEditor::PianoRoll1AudioProcessorEditor (PianoRoll1AudioP
     generateButton.addListener(this);
     processor.playPosition.addListener(this);
     
-    setWantsKeyboardFocus(true);
-    addKeyListener(this);
+    if (isStandalone) {
+        setWantsKeyboardFocus(true);
+        addKeyListener(this);
+    }
     
 //    presetSlider.setValue(processor.currentPreset);
 //    trackSlider.setValue(processor.currentTrack);

@@ -30,10 +30,6 @@ currentPositionInfo(positionInfoLocation)
      
  }
 
-void PlayCursorWindow::setPlayCursor(float val){
-    playCursorLine = val; //old version
-}
-
 void PlayCursorWindow::timerCallback(){
     bool isPlaying = currentPositionInfo.isPlaying;
     currentPositionMarker.setVisible(isPlaying);

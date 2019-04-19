@@ -24,7 +24,9 @@ public:
     PlayCursorWindow(AudioPlayHead::CurrentPositionInfo& positionInfoLocation);
     
 
-    void setPlayCursor(float val);
+    constexpr void setPlayCursor(float val){
+        playCursorLine = val;
+    }
     
 private:
     float playCursorLine;

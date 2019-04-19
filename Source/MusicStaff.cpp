@@ -11,7 +11,6 @@
 #include "MusicStaff.h"
 
 Staff::Staff(){
-
 }
 
 
@@ -37,27 +36,21 @@ void Staff::paint(juce::Graphics &g){
         else return "?";
         
     }();
-    const uint8 bottomNote = [&]()->uint8{
-        uint8 returnVal;
-        if(isTreble) returnVal = 60;
-        else         returnVal = 0;
-        
-        return returnVal;
-    }();
+    const uint8 bottomNote = (isTreble) ? 60 : 0;
     
     const String modeName = presets[currentPreset]->currentMode;
     const int root = presets[currentPreset]->root;
     Theory::Mode mode = Theory::modeMap.at(modeName);
     auto [modeNotes, enharmIndex, intervals] = mode;
     
-    drawClef(g, width, height, clefHeight, *clefText);
+    drawClef(g, width, height, clefHeight, clefText);
     
     drawStaffLines(g, width, lineSpacing);
     
     //=================
     //====DRAW NOTEs===
     //=================
-    int prevDiatonicNoteVal = -1;
+
     for_indexed(auto& [pitch, noteName, diatonicNoteValue, diatonicModValue, accidental] : notes){
         
         const int pitchSetClass = ((int)pitch) % 12;
@@ -66,8 +59,8 @@ void Staff::paint(juce::Graphics &g){
         const float yPos = height - ( (lineSpacing/2) * (diatonicNoteValue+3) );
         const float ledgerLineX = xPos - noteWidth/2;
         const float ledgerLineY = yPos+(lineSpacing/2);
-        
         checkAccidental(accidental, modeNotes, enharmIndex, pitchSetClass);
+        const String accidentalText = Theory::getAccidentalText(accidental);
         
         const auto [lowestCinStaffLineOffset, lowestCinStaffOctave] = [&](){
             switch(clef){
@@ -78,19 +71,6 @@ void Staff::paint(juce::Graphics &g){
                 case BASS_8VA:   return std::pair<int, int>(1, 1);
                 case BASS_15MA:  return std::pair<int, int>(1, 0);
             }
-        }();
-        
-        const char* accidentalText = [&, accidental=accidental](){
-            switch(accidental){
-                case SHARP: return "#";
-                case FLAT: return "b";
-                case DOUBLE_SHARP: return "x";
-                case DOUBLE_FLAT: return "bb";
-                case NATURAL: return "";
-                case COURTESY_NATURAL: return "n";
-                case NO_PREFERENCE: jassertfalse;
-            }
-            return "";
         }();
         
         g.fillEllipse(xPos, yPos, noteWidth, noteHeight); //Draw note.
@@ -104,13 +84,13 @@ void Staff::paint(juce::Graphics &g){
     }
 }
 
-constexpr void Staff::drawClef(Graphics &g, const float width, const float height, const float clefHeight, const char clefText){
+constexpr void Staff::drawClef(Graphics &g, const float width, const float height, const float clefHeight, const char* clefText) const{
     g.setFont(opusLookAndFeel.getOpus());
     g.setFont(height*0.76);
     g.drawText(static_cast<String>(clefText), 0.0f, clefHeight, width, height, Justification::left);
 }
 
-constexpr void Staff::drawStaffLines(Graphics &g, const int width, const int lineSpacing){
+constexpr void Staff::drawStaffLines(Graphics &g, const int width, const int lineSpacing) const{
     g.setColour(Colours::black);
     for(int line=4; line<9;line++){
         float yPos = line*lineSpacing;
@@ -124,9 +104,8 @@ void Staff::drawNotes(Graphics &g){
 }
 
 void Staff::checkAccidental(Accidental& accidental, const Array<int> modeNotes, const Array<int> enharmIndex, const int pitchSetClass) const{
-    
+    //==If accidental is not specified, prefer sharps==//
     if (accidental == NO_PREFERENCE){
-        
         accidental = [&](){
             if(modeNotes.contains(pitchSetClass)){
                 switch (enharmIndex[modeNotes.indexOf(pitchSetClass)]){
@@ -137,7 +116,6 @@ void Staff::checkAccidental(Accidental& accidental, const Array<int> modeNotes, 
                     case 0 : return NATURAL;
                 }
             }
-            
             return checkIfBlackKey(pitchSetClass) ? SHARP : NATURAL;
         }();
     }

@@ -30,7 +30,7 @@ public:
     
 private:
     
-    void drawVolumes (PaintData p);
+    void drawVolumes (PaintData p) const;
     
     
     

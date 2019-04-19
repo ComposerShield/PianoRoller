@@ -18,6 +18,7 @@ OwnedArray<PianoRollComponent::Preset> PianoRollComponent::presets = []()->Owned
 }();
 
 bool PianoRollComponent::isChildOfBeatCanvas = false;
+bool PianoRollComponent::isDoubleClick = false;
 
 constexpr Note& PianoRollComponent::getMonoNote(const int col, const int beatSwitch) const{
     switch(beatSwitch){
@@ -111,7 +112,7 @@ void PianoRollComponent::drawColumnLine(const PaintData p, const int subDiv, con
     p.g.drawLine(xPosition, 0., xPosition, p.height, lineWidth);
 }
 
-int PianoRollComponent::divToBeatSwitch(int div){
+int PianoRollComponent::divToBeatSwitch(int div) const{
     switch(div){
         case 4: return 0;
         case 3: return 1;
@@ -119,7 +120,7 @@ int PianoRollComponent::divToBeatSwitch(int div){
     }
 }
 
-int PianoRollComponent::beatSwitchToDiv(int beatSwitch){
+int PianoRollComponent::beatSwitchToDiv(int beatSwitch) const{
     switch(beatSwitch){
         case 0: return 4;
         case 1: return 3;
@@ -127,12 +128,12 @@ int PianoRollComponent::beatSwitchToDiv(int beatSwitch){
     }
 }
 
-bool PianoRollComponent::isMono(){
+bool PianoRollComponent::isMono() const{
     return presets[currentPreset]->isMono;
 }
 
-std::pair<bool, bool> PianoRollComponent::getClicks(MouseEvent event, bool isDoubleClick){
-    bool isMac = (SystemStats::getOperatingSystemType() & juce::SystemStats::MacOSX) != 0;
+std::pair<bool, bool> PianoRollComponent::getClicks(MouseEvent event, bool isDoubleClick) const{
+    const bool isMac = (SystemStats::getOperatingSystemType() & juce::SystemStats::MacOSX) != 0;
     return std::make_pair(event.mods.isLeftButtonDown(),
                           event.mods.isRightButtonDown() ||
                           isDoubleClick                  ||

@@ -23,13 +23,14 @@ PianoRoll1AudioProcessor::PianoRoll1AudioProcessor()
                      #endif
                        ),
         treeState(*this, nullptr, "PARAMETERS", {
-            std::make_unique<AudioParameterInt> (PRESET_ID, PRESET_NAME, 1, numOfPresets, 1),
-            std::make_unique<AudioParameterInt> (TRACK_ID, TRACK_NAME, 1, numOfTracks, 1),
-            std::make_unique<AudioParameterInt> (BEATS_ID, BEATS_NAME, 1, maxBeats, 4),
-            std::make_unique<AudioParameterInt> (ROOT_ID, ROOT_NAME, 0, 16, 0),
-            std::make_unique<AudioParameterInt> (SCALE_ID, SCALE_NAME, 0, Theory::modeMap.size()-1, Theory::getMajorFromModeMap),
-            std::make_unique<AudioParameterInt> (MONOPOLY_ID, MONOPOLY_NAME, 0, 1, 0)
-        })
+            (std::make_unique<AudioParameterInt> (PRESET_ID, PRESET_NAME, 1, numOfPresets, 1)),
+            (std::make_unique<AudioParameterInt> (TRACK_ID, TRACK_NAME, 1, numOfTracks, 1)),
+            (std::make_unique<AudioParameterInt> (BEATS_ID, BEATS_NAME, 1, maxBeats, 4)),
+            (std::make_unique<AudioParameterInt> (ROOT_ID, ROOT_NAME, 0, 16, 0)),
+            (std::make_unique<AudioParameterInt> (SCALE_ID, SCALE_NAME, 0, Theory::modeMap.size()-1, Theory::getMajorFromModeMap)),
+            (std::make_unique<AudioParameterInt> (MONOPOLY_ID, MONOPOLY_NAME, 0, 1, 0))
+        }
+        )
 #endif
 {
     
@@ -224,7 +225,14 @@ void PianoRoll1AudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-    
+    StringArray foo2;
+    for(auto [pitch, vol, active] : presets[currentPreset]->tracks[currentTrack]->sixteenthNotes)
+        foo2.add(static_cast<String>(pitch)  + "," +
+                 static_cast<String>(vol)    + "," +
+                 (active ? "true" : "false") );
+
+//    auto switchNode = treeState.state.getOrCreateChildWithName ("MySwitches", nullptr);
+//    switchNode.setProperty ("values", foo3, nullptr);
     
     ScopedPointer<XmlElement> xml(treeState.state.createXml());
     copyXmlToBinary(*xml, destData);

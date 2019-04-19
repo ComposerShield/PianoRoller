@@ -43,7 +43,7 @@ void VolumePanel::paint (Graphics& g)
     g.drawLine(width, 0.0f, width, height, 3); //Right side line.
 }
 
-void VolumePanel::drawVolumes(PaintData p){
+void VolumePanel::drawVolumes(PaintData p) const{
     auto thisTrack = presets[currentPreset]->tracks[currentTrack];
     
     for(int beat=0;beat<p.numOfBeats;beat++){
